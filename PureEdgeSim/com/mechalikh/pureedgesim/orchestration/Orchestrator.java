@@ -17,7 +17,6 @@ public abstract class Orchestrator {
 	protected List<Vm> vmList;
 	protected SimulationManager simulationManager;
 	protected SimLog simLog;
-	protected String algorithm;
 	protected String architecture;
 
 	public Orchestrator(SimulationManager simulationManager) {
@@ -25,7 +24,6 @@ public abstract class Orchestrator {
 		simLog = simulationManager.getSimulationLogger();
 		orchestrationHistory = new ArrayList<>();
 		vmList = simulationManager.getServersManager().getVmList();
-		algorithm = simulationManager.getScenario().getStringOrchAlgorithm();
 		architecture = simulationManager.getScenario().getStringOrchArchitecture();
 		initHistoryList(vmList.size());
 	}
@@ -156,6 +154,7 @@ public abstract class Orchestrator {
 										&& ((EdgeDataCenter) edgeVM.getHost().getDatacenter()).isDead())));
 	}
 
+	// TODO This is implemented nowhere
 	public abstract void resultsReturned(Task task);
 
 }

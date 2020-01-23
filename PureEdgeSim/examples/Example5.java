@@ -1,6 +1,7 @@
 package examples;
 
 import com.mechalikh.pureedgesim.MainApplication;
+import com.mechalikh.pureedgesim.orchestration.IncreaseLifetimeOrchestrator;
 
 public class Example5 extends MainApplication {
 	/**
@@ -19,7 +20,7 @@ public class Example5 extends MainApplication {
 		 * class can be found in the examples folder. by removing this line, pureEdgeSim
 		 * will use the default orchestrator class.
 		 */
-		setCustomEdgeOrchestrator(CustomEdgeOrchestrator.class);
+		setCustomEdgeOrchestrator(IncreaseLifetimeOrchestrator.class);
 
 		/*
 		 * This custom class uses another orchestrator algorithm called

@@ -1,4 +1,4 @@
-package examples;
+package com.mechalikh.pureedgesim.orchestration;
 
 import com.mechalikh.pureedgesim.datacenter.EdgeDataCenter;
 import com.mechalikh.pureedgesim.logging.SimLog;
@@ -7,26 +7,12 @@ import com.mechalikh.pureedgesim.loadgenerator.Task;
 import com.mechalikh.pureedgesim.orchestration.Orchestrator;
 import org.cloudbus.cloudsim.vms.Vm;
 
-public class CustomEdgeOrchestrator extends Orchestrator {
-
-	public CustomEdgeOrchestrator(SimulationManager simulationManager) {
+public class IncreaseLifetimeOrchestrator extends Orchestrator {
+	public IncreaseLifetimeOrchestrator(SimulationManager simulationManager) {
 		super(simulationManager);
 	}
 
 	protected Vm findVM(String[] architecture, Task task) {
-		if ("INCEREASE_LIFETIME".equals(algorithm)) {
-			return increseLifetime(architecture, task);
-		} else {
-			SimLog.println("");
-			SimLog.println("Custom Orchestrator- Unknnown orchestration algorithm '" + algorithm
-					+ "', please check the simulation parameters file...");
-			// Cancel the simulation
-			Runtime.getRuntime().exit(0);
-		}
-		return Vm.NULL;
-	}
-
-	private Vm increseLifetime(String[] architecture, Task task) {
 		Vm vm = Vm.NULL;
 		double minTasksCount = -1; // vm with minimum assigned tasks;
 		double vmMips = 0;
@@ -80,7 +66,6 @@ public class CustomEdgeOrchestrator extends Orchestrator {
 	@Override
 	public void resultsReturned(Task task) {
 		// TODO Auto-generated method stub
-		
 	}
 
 }

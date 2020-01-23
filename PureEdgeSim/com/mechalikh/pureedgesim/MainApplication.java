@@ -24,7 +24,7 @@ import com.mechalikh.pureedgesim.core.SimulationManager;
 import com.mechalikh.pureedgesim.loadgenerator.DefaultTasksGenerator;
 import com.mechalikh.pureedgesim.loadgenerator.Task;
 import com.mechalikh.pureedgesim.loadgenerator.TasksGenerator;
-import com.mechalikh.pureedgesim.orchestration.DefaultEdgeOrchestrator;
+import com.mechalikh.pureedgesim.orchestration.TradeOffOrchestrator;
 import com.mechalikh.pureedgesim.orchestration.Orchestrator;
 import com.mechalikh.pureedgesim.energy.DefaultEnergyModel;
 import com.mechalikh.pureedgesim.datacenter.EdgeDataCenter;
@@ -39,10 +39,11 @@ public class MainApplication {
 	protected int step = 1;
 	protected static int cpuCores;
 	protected static List<Scenario> Iterations = new ArrayList<>();
+	// TODO Refactor this
 	protected static Class<? extends Mobility> mobilityManager = DefaultMobilityModel.class;
 	protected static Class<? extends EdgeDataCenter> edgedatacenter = DefaultEdgeDataCenter.class;
 	protected static Class<? extends TasksGenerator> tasksGenerator = DefaultTasksGenerator.class;
-	protected static Class<? extends Orchestrator> orchestrator = DefaultEdgeOrchestrator.class;
+	protected static Class<? extends Orchestrator> orchestrator = TradeOffOrchestrator.class;
 	protected static Class<? extends EnergyModel> energyModel = DefaultEnergyModel.class;
 	protected static Class<? extends NetworkModel> networkModel = DefaultNetworkModel.class;
 

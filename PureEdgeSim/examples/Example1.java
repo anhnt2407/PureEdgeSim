@@ -2,6 +2,7 @@ package examples;
 
 import com.mechalikh.pureedgesim.MainApplication; 
 import com.mechalikh.pureedgesim.loadgenerator.DefaultTasksGenerator;
+import com.mechalikh.pureedgesim.orchestration.IncreaseLifetimeOrchestrator;
 
 public class Example1 extends MainApplication {
 	/**
@@ -21,7 +22,7 @@ public class Example1 extends MainApplication {
 		setCustomMobilityModel(CustomMobilityManager.class);
 
 		// To change the tasks orchestrator
-		setCustomEdgeOrchestrator(CustomEdgeOrchestrator.class);
+		setCustomEdgeOrchestrator(IncreaseLifetimeOrchestrator.class);
 
 		// To change the tasks generator
 		setCustomTasksGenerator(DefaultTasksGenerator.class);
