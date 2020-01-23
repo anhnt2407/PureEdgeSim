@@ -71,12 +71,12 @@ public class ChartsGenerator {
 					.yAxisTitle(y_series_label).build();
 			chart.setTitle(y_series + " (" + simulationParameters.ORCHESTRATION_ARCHITECTURES[orch] + ")");
 			chart.getStyler().setLegendVisible(true);
-			for (int alg = 0; alg < simulationParameters.ORCHESTRATION_AlGORITHMS.length; alg++) {
+			for (int alg = 0; alg < simulationParameters.ORCHESTRATION_ALGORITHMS.length; alg++) {
 				double[] xData = toArray(getColumn(x_series, simulationParameters.ORCHESTRATION_ARCHITECTURES[orch],
-						simulationParameters.ORCHESTRATION_AlGORITHMS[alg]));
+						simulationParameters.ORCHESTRATION_ALGORITHMS[alg]));
 				double[] yData = toArray(getColumn(y_series, simulationParameters.ORCHESTRATION_ARCHITECTURES[orch],
-						simulationParameters.ORCHESTRATION_AlGORITHMS[alg]));
-				XYSeries series = chart.addSeries(simulationParameters.ORCHESTRATION_AlGORITHMS[alg], xData, yData);
+						simulationParameters.ORCHESTRATION_ALGORITHMS[alg]));
+				XYSeries series = chart.addSeries(simulationParameters.ORCHESTRATION_ALGORITHMS[alg], xData, yData);
 				series.setMarker(SeriesMarkers.CIRCLE); // Marker type :circle,rectangle, diamond..
 				series.setLineStyle(new BasicStroke());
 			}
@@ -87,23 +87,23 @@ public class ChartsGenerator {
 	}
 
 	public void byArchitectures(String x_series, String y_series, String y_series_label, String folder) {
-		for (int alg = 0; alg < simulationParameters.ORCHESTRATION_AlGORITHMS.length; alg++) {
+		for (int alg = 0; alg < simulationParameters.ORCHESTRATION_ALGORITHMS.length; alg++) {
 			chart = new XYChartBuilder().height(400).width(600).theme(ChartTheme.Matlab).xAxisTitle(x_series)
 					.yAxisTitle(y_series_label).build();
-			chart.setTitle(y_series + " (" + simulationParameters.ORCHESTRATION_AlGORITHMS[alg] + ")");
+			chart.setTitle(y_series + " (" + simulationParameters.ORCHESTRATION_ALGORITHMS[alg] + ")");
 			chart.getStyler().setLegendVisible(true);
 			for (int orch = 0; orch < simulationParameters.ORCHESTRATION_ARCHITECTURES.length; orch++) {
 				double[] xData = toArray(getColumn(x_series, simulationParameters.ORCHESTRATION_ARCHITECTURES[orch],
-						simulationParameters.ORCHESTRATION_AlGORITHMS[alg]));
+						simulationParameters.ORCHESTRATION_ALGORITHMS[alg]));
 				double[] yData = toArray(getColumn(y_series, simulationParameters.ORCHESTRATION_ARCHITECTURES[orch],
-						simulationParameters.ORCHESTRATION_AlGORITHMS[alg]));
+						simulationParameters.ORCHESTRATION_ALGORITHMS[alg]));
 				XYSeries series = chart.addSeries(simulationParameters.ORCHESTRATION_ARCHITECTURES[orch], xData, yData);
 				series.setMarker(SeriesMarkers.CIRCLE); // Marker type :circle,rectangle, diamond..
 				series.setLineStyle(new BasicStroke());
 			}
 			// Save the chart
 			saveBitmap("Architectures" + folder + "/",
-					y_series + "__" + simulationParameters.ORCHESTRATION_AlGORITHMS[alg]);
+					y_series + "__" + simulationParameters.ORCHESTRATION_ALGORITHMS[alg]);
 		}
 	}
 

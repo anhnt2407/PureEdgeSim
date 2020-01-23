@@ -461,10 +461,10 @@ public class SimLog {
 		this.currentOrchArchitecture = currentOrchPolicy;
 	}
 
-	public void initialize(SimulationManager simulationManager, int dev, int alg, int arch) {
+	public void initialize(SimulationManager simulationManager, int dev, String alg, String arch) {
 		this.currentEdgeDevicesCount = dev;
-		this.currentOrchAlgorithm = simulationParameters.ORCHESTRATION_AlGORITHMS[alg];
-		this.currentOrchArchitecture = simulationParameters.ORCHESTRATION_ARCHITECTURES[arch];
+		this.currentOrchAlgorithm = alg;
+		this.currentOrchArchitecture = arch;
 		this.simulationManager = simulationManager;
 	}
 

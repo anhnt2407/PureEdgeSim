@@ -70,12 +70,12 @@ public class MainApplication {
 
 		Date startDate = Calendar.getInstance().getTime();
 
-		// Walk through all orchestration scenarios
-		for (int algorithmID = 0; algorithmID < simulationParameters.ORCHESTRATION_AlGORITHMS.length; algorithmID++) {
-			// Repeat the operation of the whole set of criteria
-			for (int architectureID = 0; architectureID < simulationParameters.ORCHESTRATION_ARCHITECTURES.length; architectureID++) {
-				for (int devicesCount = simulationParameters.MIN_NUM_OF_EDGE_DEVICES; devicesCount <= simulationParameters.MAX_NUM_OF_EDGE_DEVICES; devicesCount += simulationParameters.EDGE_DEVICE_COUNTER_STEP) {
-					scenarios.add(new Scenario(devicesCount, algorithmID, architectureID));
+		for (String orchestrationAlgorithm : simulationParameters.ORCHESTRATION_ALGORITHMS) {
+			for (String orchestrationArchitecture : simulationParameters.ORCHESTRATION_ARCHITECTURES) {
+				for (int devicesCount = simulationParameters.MIN_NUM_OF_EDGE_DEVICES;
+					 devicesCount <= simulationParameters.MAX_NUM_OF_EDGE_DEVICES;
+					 devicesCount += simulationParameters.EDGE_DEVICE_COUNTER_STEP) {
+					scenarios.add(new Scenario(devicesCount, orchestrationAlgorithm, orchestrationArchitecture));
 				}
 			}
 		}

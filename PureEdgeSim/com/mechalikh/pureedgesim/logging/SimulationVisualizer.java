@@ -214,8 +214,8 @@ public class SimulationVisualizer {
 
 	private void addFogServersToMap() {
 		// Only if Fog computing is used
-		if (simulationManager.getScenario().getStringOrchArchitecture().contains("FOG")
-				|| simulationManager.getScenario().getStringOrchArchitecture().equals("ALL")) {
+		if (simulationManager.getScenario().getOrchArchitecture().contains("FOG")
+				|| simulationManager.getScenario().getOrchArchitecture().equals("ALL")) {
 			// List of idle servers
 			List<Double> x_idleFogServersList = new ArrayList<>();
 			List<Double> y_idleFogServersList = new ArrayList<>();
@@ -226,8 +226,8 @@ public class SimulationVisualizer {
 			for (int j = simulationParameters.NUM_OF_CLOUD_DATACENTERS; j < simulationParameters.NUM_OF_FOG_DATACENTERS
 					+ simulationParameters.NUM_OF_CLOUD_DATACENTERS; j++) {
 				// If it is a Fog server
-				if ((simulationManager.getScenario().getStringOrchArchitecture().contains("FOG")
-						|| simulationManager.getScenario().getStringOrchArchitecture().equals("ALL"))
+				if ((simulationManager.getScenario().getOrchArchitecture().contains("FOG")
+						|| simulationManager.getScenario().getOrchArchitecture().equals("ALL"))
 						&& simulationManager.getServersManager().getDatacenterList().get(j)
 								.getType() == simulationParameters.TYPES.FOG
 						&& simulationParameters.NUM_OF_FOG_DATACENTERS != 0) {
@@ -271,8 +271,8 @@ public class SimulationVisualizer {
 		double time = this.simulationManager.getSimulation().clock() - simulationParameters.INITIALIZATION_TIME;
 		simulationResultsFrame.setTitle("Simulation time = " + ((int) time / 60) + " min : " + ((int) time % 60)
 				+ " seconds  -  number of edge devices = " + simulationManager.getScenario().getDevicesCount()
-				+ " -  Architecture = " + simulationManager.getScenario().getStringOrchArchitecture()
-				+ " -  Algorithm = " + simulationManager.getScenario().getStringOrchAlgorithm());
+				+ " -  Architecture = " + simulationManager.getScenario().getOrchArchitecture()
+				+ " -  Algorithm = " + simulationManager.getScenario().getOrchAlgorithm());
 	}
 
 	private void updateStyle(XYChart chart, Double[] array) {

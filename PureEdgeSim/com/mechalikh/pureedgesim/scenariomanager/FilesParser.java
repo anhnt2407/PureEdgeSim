@@ -94,7 +94,7 @@ public class FilesParser {
 					.parseInt(prop.getProperty("tasks_generation_rate").trim());
 			simulationParameters.ORCHESTRATION_ARCHITECTURES = prop.getProperty("orchestration_architectures")
 					.split(",");
-			simulationParameters.ORCHESTRATION_AlGORITHMS = prop.getProperty("orchestration_algorithms").split(",");
+			simulationParameters.ORCHESTRATION_ALGORITHMS = prop.getProperty("orchestration_algorithms").split(",");
 			simulationParameters.DEPLOY_ORCHESTRATOR = prop.getProperty("deploy_orchestrator").trim();
 
 			simulationParameters.CONSUMED_ENERGY_PER_BIT = Double

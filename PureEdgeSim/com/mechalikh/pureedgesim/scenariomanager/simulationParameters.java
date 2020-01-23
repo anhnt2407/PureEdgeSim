@@ -56,7 +56,7 @@ public class simulationParameters {
 	// Tasks orchestration parameters
 	public static boolean ENABLE_ORCHESTRATORS;           // Whether the tasks will be sent to the orchestrator or directly to destination
 	public static int TASKS_PER_EDGE_DEVICE_PER_MINUTES; // Tasks generation rate
-	public static String[] ORCHESTRATION_AlGORITHMS;     // Tasks orchestration algorithms
+	public static String[] ORCHESTRATION_ALGORITHMS;     // Tasks orchestration algorithms
 	public static String[] ORCHESTRATION_ARCHITECTURES;  // The used paradigms : Cloud, Edge, Fog..
 	public static boolean ENABLE_REGISTRY;               // To download the container image or execute the task directly    
 	public static String registry_mode;                  // Where the containers will be downloaded from

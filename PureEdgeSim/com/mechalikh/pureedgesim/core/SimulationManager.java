@@ -63,8 +63,8 @@ public class SimulationManager extends CloudSimEntity {
 
 	// Start simulation
 	public void startSimulation() {
-		simLog.print("SimulationManager-  Orchestration algorithm= " + scenario.getStringOrchAlgorithm()
-				+ "-  Architechitecture= " + scenario.getStringOrchArchitecture() + " -  number of edge devices= "
+		simLog.print("SimulationManager-  Orchestration algorithm= " + scenario.getOrchAlgorithm()
+				+ "-  Architechitecture= " + scenario.getOrchArchitecture() + " -  number of edge devices= "
 				+ scenario.getDevicesCount());
 		simulation.start();
 	}
@@ -74,7 +74,7 @@ public class SimulationManager extends CloudSimEntity {
 
 		// Initialize logger variables
 		simLog.setGeneratedTasks(tasksList.size());
-		simLog.setCurrentOrchPolicy(scenario.getStringOrchArchitecture());
+		simLog.setCurrentOrchPolicy(scenario.getOrchArchitecture());
 
 		simLog.print("SimulationManager- Simulation: " + this.simulationId + "  , iteration: " + this.iteration);
 
