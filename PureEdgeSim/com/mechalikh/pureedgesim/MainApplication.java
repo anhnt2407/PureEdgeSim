@@ -32,12 +32,6 @@ import com.mechalikh.pureedgesim.DataCentersManager.EdgeDataCenter;
 import ch.qos.logback.classic.Level;
 
 public class MainApplication {
-	// Simulation scenario files
-	protected static String simConfigfile = "PureEdgeSim/settings/simulation_parameters.properties";
-	protected static String applicationsFile = "PureEdgeSim/settings/applications.xml";
-	protected static String fogDevicesFile = "PureEdgeSim/settings/fog_servers.xml";
-	protected static String edgeDevicesFile = "PureEdgeSim/settings/edge_devices.xml";
-	protected static String cloudFile = "PureEdgeSim/settings/cloud.xml";
 	protected static String outputFolder = "PureEdgeSim/output/";
 
 	// Parallel simulation Parameters
@@ -57,6 +51,15 @@ public class MainApplication {
 	}
 
 	public static void launchSimulation() {
+		launchSimulation("config/default");
+	}
+
+	public static void launchSimulation(String configPath) {
+		String simConfigfile = configPath + "/simulation_parameters.properties";
+		String applicationsFile = configPath + "/applications.xml";
+		String fogDevicesFile = configPath + "/fog_servers.xml";
+		String edgeDevicesFile = configPath + "/edge_devices.xml";
+		String cloudFile = configPath + "/cloud.xml";
 		SimLog.println("Main- Loading simulation files...");
 
 		// Check files
@@ -98,16 +101,14 @@ public class MainApplication {
 			new MainApplication(0, 1).startSimulation();
 		}
 
-
 		// Simulation Finished
 		Date endDate = Calendar.getInstance().getTime();
 		SimLog.println("Main- Simulation took : " + simulationTime(startDate, endDate));
 		SimLog.println("Main- results were saved to the folder: " + outputFolder);
-
 	}
 
-	public MainApplication(int fromIteration, int step_) {
-		this.fromIteration = fromIteration;
+	public MainApplication(int fromIteration_, int step_) {
+		fromIteration = fromIteration_;
 		step = step_;
 	}
 

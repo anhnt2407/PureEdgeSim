@@ -1,5 +1,5 @@
 target/
-output/
+**/output/
 
 #Ignore IntelliJ IDEA project files
 .idea/
