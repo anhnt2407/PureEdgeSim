@@ -56,8 +56,6 @@ public class FilesParser {
 			simulationParameters.UPDATE_INTERVAL = Double.parseDouble(prop.getProperty("update_interval").trim()); // seconds
 			simulationParameters.DEEP_LOGGING = Boolean.parseBoolean(prop.getProperty("deep_log_enabled").trim());
 			simulationParameters.SAVE_LOG = Boolean.parseBoolean(prop.getProperty("save_log_file").trim());
-			simulationParameters.CLEAN_OUTPUT_FOLDER = Boolean
-					.parseBoolean(prop.getProperty("clear_output_folder").trim());
 			simulationParameters.WAIT_FOR_TASKS = Boolean.parseBoolean(prop.getProperty("wait_for_all_tasks").trim());
 			simulationParameters.ENABLE_REGISTRY = Boolean.parseBoolean(prop.getProperty("enable_registry").trim()); 
 			simulationParameters.registry_mode = prop.getProperty("registry_mode").trim(); 

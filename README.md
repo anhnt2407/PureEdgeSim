@@ -191,7 +191,6 @@ The parameters file contains the following set of parameters:
 |`save_charts`                |Boolean|true or false|Whether to save charts in `.png` format or not                                                                      |
 |`wait_for_all_tasks`         |Boolean|true or false|Wait until all tasks get executed or stop the simulation on time (when the simulation time set by the user finishes)|
 |`save_log_file`              |Boolean|true or false|Whether to save the log file or not                                                                                 |
-|`clear_output_folder`        |Boolean|true or false|Delete the output folder at the beginning of each simulation                                                        |
 |`deep_log_enabled`           |Boolean|true or false|Enable or disable deep logging                                                                                      |     
 
 *   The Location Manager (mobility model) parameters:

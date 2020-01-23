@@ -37,8 +37,7 @@ public class simulationParameters {
 	// Simulation logger parameters
 	public static boolean DEEP_LOGGING = false;   // Deep logging (to show every detail)
 	public static boolean SAVE_LOG;               // To save log file 
-	public static boolean CLEAN_OUTPUT_FOLDER;    // If true, it delete previous logs and simulation results
-	
+
 	// Network parameters 
 	public static int BANDWIDTH_WLAN;             // wlan bandwidth (in kbits/s)
 	public static int WAN_BANDWIDTH;              // wan (cloud) bandwidth (in kbits/s) 

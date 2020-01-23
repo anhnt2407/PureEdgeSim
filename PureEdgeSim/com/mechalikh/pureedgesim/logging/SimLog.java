@@ -29,15 +29,16 @@ public class SimLog {
 	public static final int NO_TIME = 0;
 	public static final int SAME_LINE = 1;
 	public static final int DEFAULT = 2;
-	private List<String> resultsList = new ArrayList<String>();
+
+	private ScenarioLog scenarioLog;
+
 	private DecimalFormat decimalFormat;
-	private List<String> log = new ArrayList<String>();
+	private List<String> log = new ArrayList<>();
 	private String currentOrchArchitecture;
 	private String currentOrchAlgorithm;
 	private int currentEdgeDevicesCount;
 	private String simStartTime;
 	private SimulationManager simulationManager;
-	private boolean isFirstIteration;
 
 	// Tasks execution results
 	private int generatedTasksCount = 0;
@@ -67,33 +68,13 @@ public class SimLog {
 	private double containersWanUsage = 0;
 	private double totalTraffic = 0;
 
-	public SimLog(String time, boolean isFirstIteration) {
+	public SimLog(String time, ScenarioLog scenarioLog) {
 		this.setSimStartTime(time);
-		this.isFirstIteration = isFirstIteration;
-
+		this.scenarioLog = scenarioLog;
 		// Use this format for all numbers
 		DecimalFormatSymbols otherSymbols = new DecimalFormatSymbols(Locale.GERMAN);
-		otherSymbols.setDecimalSeparator('.'); // use the dot "." as separation symbole, since the comma ","
-												// is used in csv files as a separator
+		otherSymbols.setDecimalSeparator('.'); // use the dot "." as separation symbole, since the comma "," is used in csv files as a separator
 		decimalFormat = new DecimalFormat("######.####", otherSymbols);
-
-		if (isFirstIteration) {
-			// Add the CSV file header
-			resultsList.add("Orchestration architecture,Orchestration algorithm,Edge devices count,"
-					+ "Tasks execution delay (s),Average execution delay (s),Tasks waiting time (s),"
-					+ "Average wainting time (s),Generated tasks,Tasks successfully executed,"
-					+ "Task not executed (No resources available or long waiting time),Tasks failed (delay),Tasks failed (device dead),"
-					+ "Tasks failed (mobility),Tasks not generated due to the death of devices,Total tasks executed (Cloud),"
-					+ "Tasks successfully executed (Cloud),Total tasks executed (Fog),Tasks successfully executed (Fog),"
-					+ "Total tasks executed (Edge),Tasks successfully executed (Edge),"
-					+ "Network usage (s),Wan usage (s),Lan usage (s), Total network traffic (MBytes), Containers wan usage (s), Containers lan usage (s),Average bandwidth per task (Mbps),Average VM CPU usage (%),"
-					+ "Average VM CPU usage (Cloud) (%),Average VM CPU usage (Fog) (%),Average VM CPU usage (Edge) (%),"
-					+ "Energy consumption (Wh),Average energy consumption (Wh/Data center),Cloud energy consumption (Wh),"
-					+ "Average Cloud energy consumption (Wh/Data center),Fog energy consumption (Wh),Average Fog energy consumption (Wh/Data center),"
-					+ "Edge energy consumption (Wh),Average Edge energy consumption (Wh/Device),Dead devices count,"
-					+ "Average remaining power (Wh),Average remaining power (%), First edge device death time (s),"
-					+ "List of remaining power (%) (only battery powered devices / 0 = dead),List of the time when each device died (s)");
-		}
 	}
 
 	public void showIterationResults(List<Task> finishedTasks) {
@@ -158,7 +139,7 @@ public class SimLog {
 				+ padLeftSpaces("" + tasksExecutedOnEdge, 14) + " tasks (where "
 				+ (tasksExecutedOnEdge - tasksFailedEdge) + " were successfully executed )");
 
-		resultsList.add(currentOrchArchitecture + "," + currentOrchAlgorithm + "," + currentEdgeDevicesCount + ","
+		scenarioLog.addToResultsList(currentOrchArchitecture + "," + currentOrchAlgorithm + "," + currentEdgeDevicesCount + ","
 				+ decimalFormat.format(totalExecutionTime) + ","
 				+ decimalFormat.format(totalExecutionTime / executedTasksCount) + ","
 				+ decimalFormat.format(totalWaitingTime) + ","
@@ -187,10 +168,9 @@ public class SimLog {
 		print("                                                            Average bandwidth per transfer="
 				+ padLeftSpaces(decimalFormat.format(totalBandwidth / transfersCount), 10) + " Mbps  ");
 		// Add these values to the las item of the results list
-		resultsList.set(resultsList.size() - 1,
-				resultsList.get(resultsList.size() - 1) + totalLanUsage + "," + totalWanUsage + "," + totalLanUsage
-						+ "," + totalTraffic + "," + containersWanUsage + "," + containersLanUsage + ","
-						+ (totalBandwidth / transfersCount) + ",");
+		scenarioLog.appendToLastResult(totalLanUsage + "," + totalWanUsage + "," + totalLanUsage + "," +
+				totalTraffic + "," + containersWanUsage + "," + containersLanUsage + "," +
+				(totalBandwidth / transfersCount) + ",");
 	}
 
 	public void printResourcesUtilizationResults(List<Task> finishedTasks) {
@@ -303,8 +283,8 @@ public class SimLog {
 					+ padLeftSpaces("" + firstDeviceDeathTime, 20) + " seconds");
 
 		// Add these values to the las item of the results list
-		resultsList.set(resultsList.size() - 1, resultsList.get(resultsList.size() - 1)
-				+ decimalFormat.format(averageCpuUtilization) + "," + decimalFormat.format(averageCloudCpuUtilization)
+		scenarioLog.appendToLastResult(decimalFormat.format(averageCpuUtilization) + ","
+				+ decimalFormat.format(averageCloudCpuUtilization)
 				+ "," + decimalFormat.format(averageFogCpuUtilization) + ","
 				+ decimalFormat.format(averageEdgeCpuUtilization) + "," + decimalFormat.format(energyConsumption) + ","
 				+ decimalFormat.format(energyConsumption / datacentersList.size()) + ","
@@ -313,41 +293,17 @@ public class SimLog {
 				+ decimalFormat.format(edgeEnConsumption) + "," + decimalFormat.format(averageEdgeEnConsumption) + ","
 				+ decimalFormat.format(deadEdgeDevicesCount) + "," + decimalFormat.format(averageRemainingPowerWh) + ","
 				+ decimalFormat.format(averageRemainingPower) + "," + firstDeviceDeathTime + ","
-				+ remainingPower.toString().replace(",", "-") + "," + devicesDeathTime.toString().replace(",", "-"));
+				+ remainingPower.toString().replace(",", "-") + ","
+				+ devicesDeathTime.toString().replace(",", "-"));
 	}
 
 	public String padLeftSpaces(String str, int n) {
 		return String.format("%1$" + n + "s", str);
 	}
 
-	public void cleanOutputFolder(String outputFolder) throws IOException {
-		// Clean the folder where the results files will be saved
-		if (isFirstIteration) {
-			print("SimLog- Cleaning the outputfolder...");
-			isFirstIteration = false;
-			Path dir = new File(outputFolder).toPath();
-			deleteDirectoryRecursion(dir);
-		}
-	}
-
-	private void deleteDirectoryRecursion(Path path) throws IOException {
-		if (Files.isDirectory(path, LinkOption.NOFOLLOW_LINKS)) {
-			try (DirectoryStream<Path> entries = Files.newDirectoryStream(path)) {
-				for (Path entry : entries) {
-					deleteDirectoryRecursion(entry);
-				}
-			}
-		}
-		try {
-			Files.delete(path);
-		} catch (Exception e) {
-			print("SimLog- Could not delete file/folder: " + path.toString());
-		}
-	}
-
 	public void saveLog() {
 		// writing results in csv file
-		writeFile(getFileName(".csv", simStartTime, simulationManager.getSimulationId()), getResultsList());
+		writeFile(getFileName(".csv", simStartTime, simulationManager.getSimulationId()), scenarioLog.getResultsList());
 
 		if (!simulationParameters.SAVE_LOG) {
 			print("SimLog- no log saving");
@@ -356,10 +312,6 @@ public class SimLog {
 
 		writeFile(getFileName(".txt", simStartTime, simulationManager.getSimulationId()), log);
 
-	}
-
-	private List<String> getResultsList() {
-		return this.resultsList;
 	}
 
 	public void writeFile(String fileName, List<String> Lines) {
@@ -377,27 +329,26 @@ public class SimLog {
 	}
 
 	public void print(String line, int flag) {
-		String newLine = line;
 		if (simulationManager == null) {
-			System.out.println("    0.0" + " : " + newLine);
+			System.out.println("    0.0" + " : " + line);
 			return;
 		}
 
 		switch (flag) {
 			case DEFAULT:
 				/*if (simulationManager.getSimulation().clock() < simulationParameters.INITIALIZATION_TIME)
-					newLine = padLeftSpaces("0", 7) + " (s) : " + newLine;
+					line = padLeftSpaces("0", 7) + " (s) : " + line;
 				else
-					newLine = padLeftSpaces(decimalFormat.format(
-							simulationManager.getSimulation().clock() - simulationParameters.INITIALIZATION_TIME), 7) + " (s) : " + newLine;*/
+					line = padLeftSpaces(decimalFormat.format(
+							simulationManager.getSimulation().clock() - simulationParameters.INITIALIZATION_TIME), 7) + " (s) : " + line;*/
 				String simulationTime = padLeftSpaces(decimalFormat.format(simulationManager.getSimulation().clock()), 5);
-				log.add(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()) + " - " + simulationTime + "s - " + newLine);
+				log.add(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()) + " - " + simulationTime + "s - " + line);
 				break;
 			case NO_TIME:
-				log.add(newLine);
+				log.add(line);
 				break;
 			case SAME_LINE:
-				log.set(log.size() - 1, log.get(log.size() - 1) + newLine);
+				log.set(log.size() - 1, log.get(log.size() - 1) + line);
 				break;
 			default:
 				break;
