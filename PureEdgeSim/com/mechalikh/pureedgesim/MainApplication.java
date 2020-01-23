@@ -38,7 +38,7 @@ public class MainApplication {
 	protected int fromIteration;
 	protected int step = 1;
 	protected static int cpuCores;
-	protected static List<Scenario> Iterations = new ArrayList<>();
+	protected static List<Scenario> scenarios = new ArrayList<>();
 	// TODO Refactor this
 	protected static Class<? extends Mobility> mobilityManager = DefaultMobilityModel.class;
 	protected static Class<? extends EdgeDataCenter> edgedatacenter = DefaultEdgeDataCenter.class;
@@ -78,7 +78,7 @@ public class MainApplication {
 			// Repeat the operation of the whole set of criteria
 			for (int architectureID = 0; architectureID < simulationParameters.ORCHESTRATION_ARCHITECTURES.length; architectureID++) {
 				for (int devicesCount = simulationParameters.MIN_NUM_OF_EDGE_DEVICES; devicesCount <= simulationParameters.MAX_NUM_OF_EDGE_DEVICES; devicesCount += simulationParameters.EDGE_DEVICE_COUNTER_STEP) {
-					Iterations.add(new Scenario(devicesCount, algorithmID, architectureID));
+					scenarios.add(new Scenario(devicesCount, algorithmID, architectureID));
 				}
 			}
 		}
@@ -87,7 +87,7 @@ public class MainApplication {
 			List<MainApplication> simulationList = new ArrayList<>(cpuCores);
 
 			// Generate the parallel simulations
-			for (int fromIteration = 0; fromIteration < Math.min(cpuCores, Iterations.size()); fromIteration++) {
+			for (int fromIteration = 0; fromIteration < Math.min(cpuCores, scenarios.size()); fromIteration++) {
 				// The number of parallel simulations will be limited by the minimum value
 				// between cpu cores and number of iterations
 				simulationList.add(new MainApplication(fromIteration, cpuCores));
@@ -122,7 +122,7 @@ public class MainApplication {
 		SimulationManager simulationManager;
 		SimLog simLog = null;
 		try { // Repeat the operation for different number of devices
-			for (int it = fromIteration; it < Iterations.size(); it += step) {
+			for (int it = fromIteration; it < scenarios.size(); it += step) {
 				// New simlog for each simulation (when parallelism is enabled
 				simLog = new SimLog(startTime, isFirstIteration);
 
@@ -136,9 +136,9 @@ public class MainApplication {
 
 				// Initialize the simulation manager
 				simulationManager = new SimulationManager(simLog, simulation, simulationId, iteration,
-						Iterations.get(it));
-				simLog.initialize(simulationManager, Iterations.get(it).getDevicesCount(),
-						Iterations.get(it).getOrchAlgorithm(), Iterations.get(it).getOrchArchitecture());
+						scenarios.get(it));
+				simLog.initialize(simulationManager, scenarios.get(it).getDevicesCount(),
+						scenarios.get(it).getOrchAlgorithm(), scenarios.get(it).getOrchArchitecture());
 
 				// Generate all data centers, servers, an devices
 				ServersManager serversManager = new ServersManager(simulationManager, mobilityManager, energyModel,

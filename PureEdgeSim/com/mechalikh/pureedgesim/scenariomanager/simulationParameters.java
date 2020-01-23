@@ -18,9 +18,9 @@ public class simulationParameters {
 	public static boolean AUTO_CLOSE_REAL_TIME_CHARTS;// Close real time charts when simlation finishes 
 	public static double CHARTS_UPDATE_INTERVAL;	  // Charts refresh interval in seconds
 	public static boolean SAVE_CHARTS;                // Save charts to bitmap format (*.png files)  
-	
+
 	// Simulation area
-	public static int AREA_LENGTH;                         
+	public static int AREA_HEIGHT;
 	public static int AREA_WIDTH;
 	
 	// Edge devices, server,datacenters..

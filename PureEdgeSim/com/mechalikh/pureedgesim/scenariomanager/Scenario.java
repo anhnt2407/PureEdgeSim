@@ -48,6 +48,5 @@ public class Scenario {
 	public String toString() {
 		return getStringOrchAlgorithm()+"-"+getStringOrchArchitecture()+ "-"+getDevicesCount();
 	}
-	
 
 }

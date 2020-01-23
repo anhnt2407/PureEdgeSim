@@ -51,8 +51,8 @@ public class FilesParser {
 					.parseDouble(prop.getProperty("charts_update_interval").trim());
 			simulationParameters.SAVE_CHARTS = Boolean.parseBoolean(prop.getProperty("save_charts").trim());
 
-			simulationParameters.AREA_LENGTH = Integer.parseInt(prop.getProperty("length").trim()); // seconds
-			simulationParameters.AREA_WIDTH = Integer.parseInt(prop.getProperty("width").trim()); // seconds
+			simulationParameters.AREA_HEIGHT = Integer.parseInt(prop.getProperty("height").trim()); // meters
+			simulationParameters.AREA_WIDTH = Integer.parseInt(prop.getProperty("width").trim()); // meters
 			simulationParameters.UPDATE_INTERVAL = Double.parseDouble(prop.getProperty("update_interval").trim()); // seconds
 			simulationParameters.DEEP_LOGGING = Boolean.parseBoolean(prop.getProperty("deep_log_enabled").trim());
 			simulationParameters.SAVE_LOG = Boolean.parseBoolean(prop.getProperty("save_log_file").trim());

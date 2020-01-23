@@ -27,7 +27,6 @@ public class ChartsGenerator {
 	public ChartsGenerator(String fileName) {
 		this.fileName = fileName;
 		loadFile();
-
 	}
 
 	private void loadFile() {

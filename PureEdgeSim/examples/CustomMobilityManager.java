@@ -23,8 +23,8 @@ public class CustomMobilityManager extends Mobility {
 		Double y_position = this.currentLocation.getYPos() + 1;
 
 		// if x position is bigger then the simulation area length, start from 0
-		if (x_position > simulationParameters.AREA_LENGTH)
-			x_position = x_position % simulationParameters.AREA_LENGTH;
+		if (x_position > simulationParameters.AREA_HEIGHT)
+			x_position = x_position % simulationParameters.AREA_HEIGHT;
 
 		// if y position is bigger then the simulation area length, start from 0
 		if (y_position > simulationParameters.AREA_WIDTH)

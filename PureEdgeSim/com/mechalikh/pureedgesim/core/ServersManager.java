@@ -44,8 +44,10 @@ public class ServersManager {
 	private Class<? extends EnergyModel> energyModel;
 	private Class<? extends EdgeDataCenter> edgeDataCenterType;
 
-	public ServersManager(SimulationManager simulationManager, Class<? extends Mobility> mobilityManager,
-			Class<? extends EnergyModel> energyModel, Class<? extends EdgeDataCenter> edgedatacenter) {
+	public ServersManager(SimulationManager simulationManager,
+						  Class<? extends Mobility> mobilityManager,
+						  Class<? extends EnergyModel> energyModel,
+						  Class<? extends EdgeDataCenter> edgedatacenter) {
 		datacentersList = new ArrayList<>();
 		orchestratorsList = new ArrayList<>();
 		vmList = new ArrayList<>();
@@ -169,8 +171,7 @@ public class ServersManager {
 
 		Location datacenterLocation = null;
 		Constructor<?> datacenterConstructor = edgeDataCenterType.getConstructor(SimulationManager.class, List.class);
-		EdgeDataCenter datacenter = (EdgeDataCenter) datacenterConstructor.newInstance(getSimulationManager(),
-				hostList);
+		EdgeDataCenter datacenter = (EdgeDataCenter) datacenterConstructor.newInstance(getSimulationManager(), hostList);
 		if (level == simulationParameters.TYPES.FOG) {
 			Element location = (Element) datacenterElement.getElementsByTagName("location").item(0);
 			x_position = Integer.parseInt(location.getElementsByTagName("x_pos").item(0).getTextContent());
@@ -185,8 +186,9 @@ public class ServersManager {
 					.parseDouble(datacenterElement.getElementsByTagName("batterycapacity").item(0).getTextContent()));
 
 			// Generate random location for edge devices
-			datacenterLocation = new Location(new Random().nextInt(simulationParameters.AREA_LENGTH),
-					new Random().nextInt(simulationParameters.AREA_LENGTH));
+			double x = new Random().nextInt(simulationParameters.AREA_WIDTH);
+			double y = new Random().nextInt(simulationParameters.AREA_HEIGHT);
+			datacenterLocation = new Location(x, y);
 			getSimulationManager().getSimulationLogger().deepLog("ServersManager- Edge device:" + datacentersList.size()
 					+ "    location: ( " + datacenterLocation.getXPos() + "," + datacenterLocation.getYPos() + " )");
 		}
@@ -225,11 +227,10 @@ public class ServersManager {
 
 			if (type == simulationParameters.TYPES.CLOUD) {
 				bandwidth = simulationParameters.WAN_BANDWIDTH / hostNodeList.getLength();
-				ram = Integer.parseInt(hostElement.getElementsByTagName("ram").item(0).getTextContent());
 			} else {
 				bandwidth = simulationParameters.BANDWIDTH_WLAN / hostNodeList.getLength();
-				ram = Integer.parseInt(hostElement.getElementsByTagName("ram").item(0).getTextContent());
 			}
+			ram = Integer.parseInt(hostElement.getElementsByTagName("ram").item(0).getTextContent());
 
 			// A Machine contains one or more PEs or CPUs/Cores. Therefore, should
 			// create a list to store these PEs before creating

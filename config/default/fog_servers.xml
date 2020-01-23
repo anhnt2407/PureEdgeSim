@@ -6,7 +6,7 @@
 		<maxConsumption>0.016</maxConsumption> 		<!--max energy consumption/ second when using 100% of cpu -->
 		<isOrchestrator>false</isOrchestrator>		<!--it has a task orchestrator or not -->
 		<location>
-			<x_pos>50</x_pos>			<!--must be inferior to the map/area length -->
+			<x_pos>50</x_pos>			<!--must be inferior to the map/area height -->
 			<y_pos>100</y_pos>			<!--must be inferior to the map/area width -->
 		</location>
 		<hosts>

@@ -198,7 +198,7 @@ The parameters file contains the following set of parameters:
 
 |Parameter     |Type   |Options/Range|Description                                                 | 
 |--------------|-------|-------------|------------------------------------------------------------|
-|`length`      |Integer|>= 1         |The simulation area length (in meters)                      |
+|`height`      |Integer|>= 1         |The simulation area height (in meters)                      |
 |`width`       |Integer|>= 1         |The simulation area width (in meters)                       |
 |`Edge_range`  |Integer|>= 1         |The range of Edge devices (in meters)                       |
 |`Fog_coverage`|Integer|>= 1         |The raius of the area covered by each Fog server (in meters)|
