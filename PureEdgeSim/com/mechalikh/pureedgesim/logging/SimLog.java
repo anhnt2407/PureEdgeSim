@@ -347,14 +347,14 @@ public class SimLog {
 
 	public void saveLog() {
 		// writing results in csv file
-		writeFile(getFileName(".csv"), getResultsList());
+		writeFile(getFileName(".csv", simStartTime, simulationManager.getSimulationId()), getResultsList());
 
 		if (!simulationParameters.SAVE_LOG) {
 			print("SimLog- no log saving");
 			Runtime.getRuntime().exit(0);
 		}
 
-		writeFile(getFileName(".txt"), log);
+		writeFile(getFileName(".txt", simStartTime, simulationManager.getSimulationId()), log);
 
 	}
 
@@ -374,17 +374,6 @@ public class SimLog {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-	}
-
-	public String getFileName(String extension) {
-		String outputFilesName = MainApplication.getOutputFolder() + "/" + simStartTime;
-		new File(outputFilesName).mkdirs();
-		if (simulationParameters.PARALLEL)
-			outputFilesName += "/Parallel_simulation_" + simulationManager.getSimulationId();
-		else
-			outputFilesName += "/Sequential_simulation";
-
-		return outputFilesName + extension;
 	}
 
 	public void print(String line, int flag) {
@@ -559,4 +548,14 @@ public class SimLog {
 
 	}
 
+	public static String getFileName(String extension, String simStartTime, int simulationId) {
+		String outputFilesName = MainApplication.getOutputFolder() + "/" + simStartTime;
+		new File(outputFilesName).mkdirs();
+		if (simulationParameters.PARALLEL)
+			outputFilesName += "/Parallel_simulation_" + simulationId;
+		else
+			outputFilesName += "/Sequential_simulation";
+
+		return outputFilesName + extension;
+	}
 }

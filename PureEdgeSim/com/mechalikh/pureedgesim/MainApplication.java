@@ -99,11 +99,10 @@ public class MainApplication {
 		int iteration = 0;
 		boolean isFirstIteration = true;
 		SimulationManager simulationManager;
-		SimLog simLog = null;
 		try { // Repeat the operation for different number of devices
 			for (int simulationId = 0; simulationId < scenarios.size(); simulationId++) {
 				// New simlog for each simulation (when parallelism is enabled
-				simLog = new SimLog(startTime, isFirstIteration);
+				SimLog simLog = new SimLog(startTime, isFirstIteration);
 				if (simulationParameters.CLEAN_OUTPUT_FOLDER && isFirstIteration) {
 					simLog.cleanOutputFolder(outputFolder);
 				}
@@ -113,22 +112,19 @@ public class MainApplication {
 				CloudSim simulation = new CloudSim();
 
 				// Initialize the simulation manager
-				simulationManager = new SimulationManager(simLog, simulation, simulationId, iteration,
-						scenarios.get(simulationId));
+				simulationManager = new SimulationManager(simLog, simulation, simulationId, iteration, scenarios.get(simulationId));
 
 				simLog.initialize(simulationManager, scenarios.get(simulationId).getDevicesCount(),
 						scenarios.get(simulationId).getOrchAlgorithm(), scenarios.get(simulationId).getOrchArchitecture());
 
 				// Generate all data centers, servers, an devices
-				ServersManager serversManager = new ServersManager(simulationManager, mobilityManager, energyModel,
-						edgedatacenter);
+				ServersManager serversManager = new ServersManager(simulationManager, mobilityManager, energyModel, edgedatacenter);
 				serversManager.generateDatacentersAndDevices();
 				simulationManager.setServersManager(serversManager);
 
 				// Generate tasks list
 				Constructor<?> TasksGeneratorConstructor = tasksGenerator.getConstructor(SimulationManager.class);
-				TasksGenerator tasksGenerator = (TasksGenerator) TasksGeneratorConstructor
-						.newInstance(simulationManager);
+				TasksGenerator tasksGenerator = (TasksGenerator) TasksGeneratorConstructor.newInstance(simulationManager);
 				List<Task> tasksList = tasksGenerator.generate();
 				simulationManager.setTasksList(tasksList);
 
@@ -147,7 +143,7 @@ public class MainApplication {
 
 				if (!simulationParameters.PARALLEL) {
 					// Take a few seconds pause to show the results
-					simLog.print(simulationParameters.PAUSE_LENGTH + " seconds peause...");
+					simLog.print(simulationParameters.PAUSE_LENGTH + " seconds pause...");
 					for (int k = 1; k <= simulationParameters.PAUSE_LENGTH; k++) {
 						simLog.printSameLine(".");
 						Thread.sleep(1000);
@@ -155,28 +151,20 @@ public class MainApplication {
 					SimLog.println("");
 				}
 				iteration++;
-				SimLog.println("");
-				SimLog.println("SimLog- Iteration finished...");
-				SimLog.println("");
-				SimLog.println(
-						"######################################################################################################################################################################");
-
+				SimLog.println("\nIteration finished...\n\n###########################################################################");
 			}
 			SimLog.println("Main- Simulation Finished!");
+
 			// Generate and save charts
-			generateCharts(simLog);
+			if (simulationParameters.SAVE_CHARTS && !simulationParameters.PARALLEL) {
+				SimLog.println("Main- Saving charts...");
+				ChartsGenerator chartsGenerator = new ChartsGenerator(SimLog.getFileName(".csv", startTime, scenarios.size() - 1));
+				chartsGenerator.generate();
+			}
 
 		} catch (Exception e) {
 			e.printStackTrace();
 			SimLog.println("Main- The simulation has been terminated due to an unexpected error");
-		}
-	}
-
-	protected void generateCharts(SimLog simLog) {
-		if (simulationParameters.SAVE_CHARTS && !simulationParameters.PARALLEL && simLog != null) {
-			SimLog.println("Main- Saving charts...");
-			ChartsGenerator chartsGenerator = new ChartsGenerator(simLog.getFileName(".csv"));
-			chartsGenerator.generate();
 		}
 	}
 
