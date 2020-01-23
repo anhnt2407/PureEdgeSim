@@ -15,7 +15,7 @@ import com.mechalikh.pureedgesim.scenariomanager.Scenario;
 import com.mechalikh.pureedgesim.scenariomanager.simulationParameters;
 import com.mechalikh.pureedgesim.scenariomanager.simulationParameters.TYPES;
 import com.mechalikh.pureedgesim.loadgenerator.Task;
-import com.mechalikh.pureedgesim.orchestration.CustomBroker;
+import com.mechalikh.pureedgesim.orchestration.EdgeBroker;
 import com.mechalikh.pureedgesim.orchestration.Orchestrator;
 
 public class SimulationManager extends CloudSimEntity {
@@ -28,7 +28,8 @@ public class SimulationManager extends CloudSimEntity {
 	public static final int RESULT_RETURN_FINISHED = Base + 5;
 	public static final int SEND_TO_ORCH = Base + 6;
 	public static final int UPDATE_REAL_TIME_CHARTS = Base + 7;
-	private CustomBroker broker;
+
+	private EdgeBroker broker;
 	private List<Task> tasksList;
 	private Orchestrator edgeOrchestrator;
 	private ServersManager serversManager;
@@ -296,10 +297,10 @@ public class SimulationManager extends CloudSimEntity {
 		scheduleNow(networkModel, NetworkModel.SEND_REQUEST_FROM_DEVICE_TO_ORCH, task);
 	}
 
-	private CustomBroker createBroker() {
-		CustomBroker broker;
+	private EdgeBroker createBroker() {
+		EdgeBroker broker;
 		try {
-			broker = new CustomBroker(simulation);
+			broker = new EdgeBroker(simulation);
 			broker.setSimulationManager(this);
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -328,7 +329,7 @@ public class SimulationManager extends CloudSimEntity {
 		return this.scenario;
 	}
 
-	public CustomBroker getBroker() {
+	public EdgeBroker getBroker() {
 		return this.broker;
 	}
 
@@ -377,8 +378,7 @@ public class SimulationManager extends CloudSimEntity {
 			tasksCount++;
 			return true;
 		}
-		// A simple representation of task failure due to
-		// device mobility, if the vm location doesn't match
+		// A simple representation of task failure due to device mobility, if the vm location doesn't match
 		// the edge device location (that generated this task)
 		if (phase == 1 && task.getOrchestrator() != null
 				&& task.getOrchestrator().getType() != simulationParameters.TYPES.CLOUD
@@ -432,9 +432,5 @@ public class SimulationManager extends CloudSimEntity {
 
 	public void setNetworkModel(NetworkModel networkModel) {
 		this.networkModel = networkModel;
-	}
-
-	public List<Task> getTasksList() {
-		return tasksList;
 	}
 }

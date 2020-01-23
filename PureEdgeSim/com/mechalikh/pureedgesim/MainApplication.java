@@ -1,6 +1,5 @@
 package com.mechalikh.pureedgesim;
 
-import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -37,16 +36,15 @@ import ch.qos.logback.classic.Level;
 public class MainApplication {
 	protected static String outputFolder = "PureEdgeSim/output/";
 
-	// Parallel simulation Parameters
 	protected static ScenarioLog scenarioLog = new ScenarioLog();
 	protected static List<Scenario> scenarios = new ArrayList<>();
-	// TODO Refactor this
-	protected static Class<? extends Mobility> mobilityManager = DefaultMobilityModel.class;
-	protected static Class<? extends EdgeDataCenter> edgedatacenter = DefaultEdgeDataCenter.class;
-	protected static Class<? extends TasksGenerator> tasksGenerator = DefaultTasksGenerator.class;
-	protected static Class<? extends Orchestrator> orchestrator = TradeOffOrchestrator.class;
-	protected static Class<? extends EnergyModel> energyModel = DefaultEnergyModel.class;
-	protected static Class<? extends NetworkModel> networkModel = DefaultNetworkModel.class;
+
+	protected static Class<? extends Mobility> mobilityManagerClass = DefaultMobilityModel.class;
+	protected static Class<? extends EdgeDataCenter> edgeDataCenterClass = DefaultEdgeDataCenter.class;
+	protected static Class<? extends TasksGenerator> tasksGeneratorClass = DefaultTasksGenerator.class;
+	protected static Class<? extends Orchestrator> orchestratorClass = TradeOffOrchestrator.class;
+	protected static Class<? extends EnergyModel> energyModelClass = DefaultEnergyModel.class;
+	protected static Class<? extends NetworkModel> networkModelClass = DefaultNetworkModel.class;
 
 	public static void main(String[] args) {
 		launchSimulation();
@@ -95,23 +93,23 @@ public class MainApplication {
 						simulationManagers.add(simulationManager);
 
 						// Generate all data centers, servers, an devices
-						ServersManager serversManager = new ServersManager(simulationManager, mobilityManager, energyModel, edgedatacenter);
+						ServersManager serversManager = new ServersManager(simulationManager, mobilityManagerClass, energyModelClass, edgeDataCenterClass);
 						serversManager.generateDatacentersAndDevices();
 						simulationManager.setServersManager(serversManager);
 
 						// Generate tasks list
-						Constructor<?> TasksGeneratorConstructor = tasksGenerator.getConstructor(SimulationManager.class);
+						Constructor<?> TasksGeneratorConstructor = tasksGeneratorClass.getConstructor(SimulationManager.class);
 						TasksGenerator tasksGenerator = (TasksGenerator) TasksGeneratorConstructor.newInstance(simulationManager);
 						List<Task> tasksList = tasksGenerator.generate();
 						simulationManager.setTasksList(tasksList);
 
 						// Initialize the orchestrator
-						Constructor<?> OrchestratorConstructor = orchestrator.getConstructor(SimulationManager.class);
+						Constructor<?> OrchestratorConstructor = orchestratorClass.getConstructor(SimulationManager.class);
 						Orchestrator edgeOrchestrator = (Orchestrator) OrchestratorConstructor.newInstance(simulationManager);
 						simulationManager.setOrchestrator(edgeOrchestrator);
 
 						// Initialize the network model
-						Constructor<?> networkConstructor = networkModel.getConstructor(SimulationManager.class);
+						Constructor<?> networkConstructor = networkModelClass.getConstructor(SimulationManager.class);
 						NetworkModel networkModel = (NetworkModel) networkConstructor.newInstance(simulationManager);
 						simulationManager.setNetworkModel(networkModel);
 					} catch (Exception e) {
@@ -169,24 +167,24 @@ public class MainApplication {
 		return outputFolder;
 	}
 
-	protected static void setCustomEdgeDataCenters(Class<? extends EdgeDataCenter> edgedatacenter2) {
-		edgedatacenter = edgedatacenter2;
+	protected static void setCustomEdgeDataCenters(Class<? extends EdgeDataCenter> edgeDataCenterClass) {
+		MainApplication.edgeDataCenterClass = edgeDataCenterClass;
 	}
 
-	protected static void setCustomTasksGenerator(Class<? extends TasksGenerator> tasksGenerator2) {
-		tasksGenerator = tasksGenerator2;
+	protected static void setCustomTasksGenerator(Class<? extends TasksGenerator> tasksGeneratorClass) {
+		MainApplication.tasksGeneratorClass = tasksGeneratorClass;
 	}
 
-	protected static void setCustomEdgeOrchestrator(Class<? extends Orchestrator> orchestrator2) {
-		orchestrator = orchestrator2;
+	protected static void setCustomEdgeOrchestrator(Class<? extends Orchestrator> orchestratorClass) {
+		MainApplication.orchestratorClass = orchestratorClass;
 	}
 
-	protected static void setCustomMobilityModel(Class<? extends Mobility> mobilityManager2) {
-		mobilityManager = mobilityManager2;
+	protected static void setCustomMobilityModel(Class<? extends Mobility> mobilityManagerClass) {
+		MainApplication.mobilityManagerClass = mobilityManagerClass;
 	}
 
-	protected static void setCustomEnergyModel(Class<? extends EnergyModel> energyModel2) {
-		energyModel = energyModel2;
+	protected static void setCustomEnergyModel(Class<? extends EnergyModel> energyModelClass) {
+		MainApplication.energyModelClass = energyModelClass;
 	}
 
 }

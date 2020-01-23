@@ -8,11 +8,11 @@ import org.cloudbus.cloudsim.core.events.SimEvent;
 import com.mechalikh.pureedgesim.core.SimulationManager;
 import com.mechalikh.pureedgesim.loadgenerator.Task;
 
-public class CustomBroker extends DatacenterBrokerSimple {
+public class EdgeBroker extends DatacenterBrokerSimple {
 
 	private SimulationManager simulationManager;
 
-	public CustomBroker(CloudSim simulation) {
+	public EdgeBroker(CloudSim simulation) {
 		super(simulation);
 	}
 

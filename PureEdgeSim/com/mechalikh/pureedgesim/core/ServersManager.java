@@ -33,28 +33,27 @@ import org.w3c.dom.NodeList;
 import com.mechalikh.pureedgesim.mobility.Location;
 import com.mechalikh.pureedgesim.mobility.Mobility;
 import com.mechalikh.pureedgesim.scenariomanager.simulationParameters;
-import com.mechalikh.pureedgesim.core.SimulationManager;
 
 public class ServersManager {
 	private List<EdgeDataCenter> datacentersList;
-	private List<Vm> vmList;
 	private List<EdgeDataCenter> orchestratorsList;
+	private List<Vm> vmList;
 	private SimulationManager simulationManager;
-	private Class<? extends Mobility> mobilityManager;
-	private Class<? extends EnergyModel> energyModel;
-	private Class<? extends EdgeDataCenter> edgeDataCenterType;
+	private Class<? extends Mobility> mobilityManagerClass;
+	private Class<? extends EnergyModel> energyModelClass;
+	private Class<? extends EdgeDataCenter> edgeDataCenterClass;
 
 	public ServersManager(SimulationManager simulationManager,
-						  Class<? extends Mobility> mobilityManager,
-						  Class<? extends EnergyModel> energyModel,
-						  Class<? extends EdgeDataCenter> edgedatacenter) {
+						  Class<? extends Mobility> mobilityManagerClass,
+						  Class<? extends EnergyModel> energyModelClass,
+						  Class<? extends EdgeDataCenter> edgeDataCenterClass) {
 		datacentersList = new ArrayList<>();
 		orchestratorsList = new ArrayList<>();
 		vmList = new ArrayList<>();
-		this.mobilityManager = mobilityManager;
-		this.energyModel = energyModel;
-		this.edgeDataCenterType = edgedatacenter;
-		setSimulationManager(simulationManager);
+		this.simulationManager = simulationManager;
+		this.mobilityManagerClass = mobilityManagerClass;
+		this.energyModelClass = energyModelClass;
+		this.edgeDataCenterClass = edgeDataCenterClass;
 	}
 
 	public void generateDatacentersAndDevices() throws Exception {
@@ -162,9 +161,9 @@ public class ServersManager {
 	}
 
 	private EdgeDataCenter createDatacenter(Element datacenterElement, simulationParameters.TYPES level) throws Exception {
-		List<Host> hostList = createHosts(datacenterElement, level, vmList);
+		List<Host> hostList = createHosts(datacenterElement, level);
 
-		Constructor<?> datacenterConstructor = edgeDataCenterType.getConstructor(SimulationManager.class, List.class);
+		Constructor<?> datacenterConstructor = edgeDataCenterClass.getConstructor(SimulationManager.class, List.class);
 		EdgeDataCenter datacenter = (EdgeDataCenter) datacenterConstructor.newInstance(getSimulationManager(), hostList);
 
 		if (level == simulationParameters.TYPES.FOG || level == simulationParameters.TYPES.EDGE) {
@@ -182,14 +181,14 @@ public class ServersManager {
 				y_position = new Random().nextInt(simulationParameters.AREA_HEIGHT);
 			}
 			Location datacenterLocation = new Location(x_position, y_position);
-			Constructor<?> mobilityConstructor = mobilityManager.getConstructor(Location.class);
+			Constructor<?> mobilityConstructor = mobilityManagerClass.getConstructor(Location.class);
 			datacenter.setMobilityManager(mobilityConstructor.newInstance(datacenterLocation));
 		}
 
 		datacenter.setOrchestrator(Boolean.parseBoolean(datacenterElement.getElementsByTagName("isOrchestrator").item(0).getTextContent()));
 		datacenter.setType(level);
 
-		Constructor<?> energyConstructor = energyModel.getConstructor(double.class, double.class);
+		Constructor<?> energyConstructor = energyModelClass.getConstructor(double.class, double.class);
 		double idleConsumption = Double.parseDouble(datacenterElement.getElementsByTagName("idleConsumption").item(0).getTextContent());
 		double maxConsumption = Double.parseDouble(datacenterElement.getElementsByTagName("maxConsumption").item(0).getTextContent());
 		datacenter.setEnergyModel(energyConstructor.newInstance(maxConsumption, idleConsumption));
@@ -287,9 +286,5 @@ public class ServersManager {
 
 	public SimulationManager getSimulationManager() {
 		return simulationManager;
-	}
-
-	public void setSimulationManager(SimulationManager simulationManager) {
-		this.simulationManager = simulationManager;
 	}
 }
