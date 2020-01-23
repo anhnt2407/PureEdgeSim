@@ -1,7 +1,7 @@
 package examples;
 
 import com.mechalikh.pureedgesim.MainApplication; 
-import com.mechalikh.pureedgesim.TasksGenerator.DefaultTasksGenerator; 
+import com.mechalikh.pureedgesim.loadgenerator.DefaultTasksGenerator;
 
 public class Example1 extends MainApplication {
 	/**

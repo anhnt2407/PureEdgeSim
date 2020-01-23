@@ -1,9 +1,9 @@
 package examples;
 
-import com.mechalikh.pureedgesim.DataCentersManager.EdgeDataCenter;
-import com.mechalikh.pureedgesim.DataCentersManager.EnergyModel;
-import com.mechalikh.pureedgesim.Network.FileTransferProgress;
-import com.mechalikh.pureedgesim.ScenarioManager.simulationParameters;
+import com.mechalikh.pureedgesim.datacenter.EdgeDataCenter;
+import com.mechalikh.pureedgesim.energy.EnergyModel;
+import com.mechalikh.pureedgesim.network.FileTransferProgress;
+import com.mechalikh.pureedgesim.scenariomanager.simulationParameters;
 
 public class CustomEnergyModel extends EnergyModel {
 

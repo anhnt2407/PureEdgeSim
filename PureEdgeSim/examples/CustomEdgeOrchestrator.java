@@ -1,10 +1,10 @@
 package examples;
 
-import com.mechalikh.pureedgesim.DataCentersManager.EdgeDataCenter;
-import com.mechalikh.pureedgesim.SimulationManager.SimLog;
-import com.mechalikh.pureedgesim.SimulationManager.SimulationManager;
-import com.mechalikh.pureedgesim.TasksGenerator.Task;
-import com.mechalikh.pureedgesim.TasksOrchestration.Orchestrator;
+import com.mechalikh.pureedgesim.datacenter.EdgeDataCenter;
+import com.mechalikh.pureedgesim.logging.SimLog;
+import com.mechalikh.pureedgesim.core.SimulationManager;
+import com.mechalikh.pureedgesim.loadgenerator.Task;
+import com.mechalikh.pureedgesim.orchestration.Orchestrator;
 import org.cloudbus.cloudsim.vms.Vm;
 
 public class CustomEdgeOrchestrator extends Orchestrator {

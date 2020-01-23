@@ -1,8 +1,8 @@
 package examples;
 
-import com.mechalikh.pureedgesim.LocationManager.Location;
-import com.mechalikh.pureedgesim.LocationManager.Mobility;
-import com.mechalikh.pureedgesim.ScenarioManager.simulationParameters;
+import com.mechalikh.pureedgesim.mobility.Location;
+import com.mechalikh.pureedgesim.mobility.Mobility;
+import com.mechalikh.pureedgesim.scenariomanager.simulationParameters;
 
 /* A simple custom mobility model that increase the X and Y coordinates by 1 (meter) every time.
  * This model uses the current Location of the device (from the Mobility.class) in order to calculate the next position
