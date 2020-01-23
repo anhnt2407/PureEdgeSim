@@ -71,11 +71,10 @@ public class SimulationVisualizer {
 	}
 
 	private void initCharts() {
-
 		mapChart.getStyler().setDefaultSeriesRenderStyle(XYSeriesRenderStyle.Scatter);
 		mapChart.getStyler().setMarkerSize(4);
 		updateStyle(mapChart, new Double[] { 0.0, (double) simulationParameters.AREA_WIDTH, 0.0,
-				(double) simulationParameters.AREA_LENGTH });
+				(double) simulationParameters.AREA_HEIGHT });
 
 		tasksSuccessChart.getStyler().setDefaultSeriesRenderStyle(XYSeriesRenderStyle.Line);
 		updateStyle(tasksSuccessChart, new Double[] { 0.0, null, null, 100.0 });

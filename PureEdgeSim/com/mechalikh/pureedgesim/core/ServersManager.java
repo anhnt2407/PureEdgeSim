@@ -161,51 +161,39 @@ public class ServersManager {
 		}
 	}
 
-	private EdgeDataCenter createDatacenter(Element datacenterElement, simulationParameters.TYPES level)
-			throws Exception {
+	private EdgeDataCenter createDatacenter(Element datacenterElement, simulationParameters.TYPES level) throws Exception {
+		List<Host> hostList = createHosts(datacenterElement, level, vmList);
 
-		int x_position = -1;
-		int y_position = -1;
-
-		List<Host> hostList = createHosts(datacenterElement, level);
-
-		Location datacenterLocation = null;
 		Constructor<?> datacenterConstructor = edgeDataCenterType.getConstructor(SimulationManager.class, List.class);
 		EdgeDataCenter datacenter = (EdgeDataCenter) datacenterConstructor.newInstance(getSimulationManager(), hostList);
-		if (level == simulationParameters.TYPES.FOG) {
-			Element location = (Element) datacenterElement.getElementsByTagName("location").item(0);
-			x_position = Integer.parseInt(location.getElementsByTagName("x_pos").item(0).getTextContent());
-			y_position = Integer.parseInt(location.getElementsByTagName("y_pos").item(0).getTextContent());
-			datacenterLocation = new Location(x_position, y_position);
-		} else if (level == simulationParameters.TYPES.EDGE) {
-			datacenter.setMobile(
-					Boolean.parseBoolean(datacenterElement.getElementsByTagName("mobility").item(0).getTextContent()));
-			datacenter.setBattery(
-					Boolean.parseBoolean(datacenterElement.getElementsByTagName("battery").item(0).getTextContent()));
-			datacenter.setBatteryCapacity(Double
-					.parseDouble(datacenterElement.getElementsByTagName("batterycapacity").item(0).getTextContent()));
 
-			// Generate random location for edge devices
-			double x = new Random().nextInt(simulationParameters.AREA_WIDTH);
-			double y = new Random().nextInt(simulationParameters.AREA_HEIGHT);
-			datacenterLocation = new Location(x, y);
-			getSimulationManager().getSimulationLogger().deepLog("ServersManager- Edge device:" + datacentersList.size()
-					+ "    location: ( " + datacenterLocation.getXPos() + "," + datacenterLocation.getYPos() + " )");
+		if (level == simulationParameters.TYPES.FOG || level == simulationParameters.TYPES.EDGE) {
+			int x_position;
+			int y_position;
+			if (level == simulationParameters.TYPES.FOG) {
+				Element location = (Element) datacenterElement.getElementsByTagName("location").item(0);
+				x_position = Integer.parseInt(location.getElementsByTagName("x_pos").item(0).getTextContent());
+				y_position = Integer.parseInt(location.getElementsByTagName("y_pos").item(0).getTextContent());
+			} else {
+				datacenter.setMobile(Boolean.parseBoolean(datacenterElement.getElementsByTagName("mobility").item(0).getTextContent()));
+				datacenter.setBattery(Boolean.parseBoolean(datacenterElement.getElementsByTagName("battery").item(0).getTextContent()));
+				datacenter.setBatteryCapacity(Double.parseDouble(datacenterElement.getElementsByTagName("batterycapacity").item(0).getTextContent()));
+				x_position = new Random().nextInt(simulationParameters.AREA_WIDTH);
+				y_position = new Random().nextInt(simulationParameters.AREA_HEIGHT);
+			}
+			Location datacenterLocation = new Location(x_position, y_position);
+			Constructor<?> mobilityConstructor = mobilityManager.getConstructor(Location.class);
+			datacenter.setMobilityManager(mobilityConstructor.newInstance(datacenterLocation));
 		}
 
-		double idleConsumption = Double
-				.parseDouble(datacenterElement.getElementsByTagName("idleConsumption").item(0).getTextContent());
-		double maxConsumption = Double
-				.parseDouble(datacenterElement.getElementsByTagName("maxConsumption").item(0).getTextContent());
-		datacenter.setOrchestrator(Boolean
-				.parseBoolean(datacenterElement.getElementsByTagName("isOrchestrator").item(0).getTextContent()));
+		datacenter.setOrchestrator(Boolean.parseBoolean(datacenterElement.getElementsByTagName("isOrchestrator").item(0).getTextContent()));
 		datacenter.setType(level);
 
-		Constructor<?> mobilityConstructor = mobilityManager.getConstructor(Location.class);
-		datacenter.setMobilityManager(mobilityConstructor.newInstance(datacenterLocation));
-
 		Constructor<?> energyConstructor = energyModel.getConstructor(double.class, double.class);
+		double idleConsumption = Double.parseDouble(datacenterElement.getElementsByTagName("idleConsumption").item(0).getTextContent());
+		double maxConsumption = Double.parseDouble(datacenterElement.getElementsByTagName("maxConsumption").item(0).getTextContent());
 		datacenter.setEnergyModel(energyConstructor.newInstance(maxConsumption, idleConsumption));
+
 		return datacenter;
 	}
 

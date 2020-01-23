@@ -78,7 +78,7 @@ public class DefaultMobilityModel extends Mobility {
 	}
 
 	private void Reoriotate(double x_position, double y_position) {
-		if (x_position >= simulationParameters.AREA_LENGTH)
+		if (x_position >= simulationParameters.AREA_HEIGHT)
 			orientationAngle = -90 - new Random().nextInt(180);
 		else if (x_position <= 0)
 			orientationAngle = -90 + new Random().nextInt(180);
