@@ -35,9 +35,6 @@ public class MainApplication {
 	protected static String outputFolder = "PureEdgeSim/output/";
 
 	// Parallel simulation Parameters
-	protected int fromIteration;
-	protected int step = 1;
-	protected static int cpuCores;
 	protected static List<Scenario> scenarios = new ArrayList<>();
 	// TODO Refactor this
 	protected static Class<? extends Mobility> mobilityManager = DefaultMobilityModel.class;
@@ -83,23 +80,11 @@ public class MainApplication {
 			}
 		}
 		if (simulationParameters.PARALLEL) {
-			cpuCores = Runtime.getRuntime().availableProcessors();
-			List<MainApplication> simulationList = new ArrayList<>(cpuCores);
-
-			// Generate the parallel simulations
-			for (int fromIteration = 0; fromIteration < Math.min(cpuCores, scenarios.size()); fromIteration++) {
-				// The number of parallel simulations will be limited by the minimum value
-				// between cpu cores and number of iterations
-				simulationList.add(new MainApplication(fromIteration, cpuCores));
-			}
-
-			// Finally then runs them
-			// tag::parallelExecution[]
-			simulationList.parallelStream().forEach(MainApplication::startSimulation);
-			// end::parallelExecution[]
-
+			// TODO Reimplement parallel execution
+			// List<MainApplication> simulationList = new ArrayList<>(cpuCores);
+			// simulationList.parallelStream().forEach(MainApplication::startSimulation);
 		} else { // Sequential execution
-			new MainApplication(0, 1).startSimulation();
+			new MainApplication().startSimulation();
 		}
 
 		// Simulation Finished
@@ -108,25 +93,18 @@ public class MainApplication {
 		SimLog.println("Main- results were saved to the folder: " + outputFolder);
 	}
 
-	public MainApplication(int fromIteration_, int step_) {
-		fromIteration = fromIteration_;
-		step = step_;
-	}
-
 	public void startSimulation() {
 		// File name prefix
 		String startTime = new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss").format(new Date());
-		int iteration = 1;
-		int simulationId = fromIteration + 1;
+		int iteration = 0;
 		boolean isFirstIteration = true;
 		SimulationManager simulationManager;
 		SimLog simLog = null;
 		try { // Repeat the operation for different number of devices
-			for (int it = fromIteration; it < scenarios.size(); it += step) {
+			for (int simulationId = 0; simulationId < scenarios.size(); simulationId++) {
 				// New simlog for each simulation (when parallelism is enabled
 				simLog = new SimLog(startTime, isFirstIteration);
-
-				if (simulationParameters.CLEAN_OUTPUT_FOLDER && isFirstIteration && fromIteration == 0) {
+				if (simulationParameters.CLEAN_OUTPUT_FOLDER && isFirstIteration) {
 					simLog.cleanOutputFolder(outputFolder);
 				}
 				isFirstIteration = false;
@@ -136,9 +114,10 @@ public class MainApplication {
 
 				// Initialize the simulation manager
 				simulationManager = new SimulationManager(simLog, simulation, simulationId, iteration,
-						scenarios.get(it));
-				simLog.initialize(simulationManager, scenarios.get(it).getDevicesCount(),
-						scenarios.get(it).getOrchAlgorithm(), scenarios.get(it).getOrchArchitecture());
+						scenarios.get(simulationId));
+
+				simLog.initialize(simulationManager, scenarios.get(simulationId).getDevicesCount(),
+						scenarios.get(simulationId).getOrchAlgorithm(), scenarios.get(simulationId).getOrchArchitecture());
 
 				// Generate all data centers, servers, an devices
 				ServersManager serversManager = new ServersManager(simulationManager, mobilityManager, energyModel,

@@ -8,9 +8,6 @@ public class Example2 extends MainApplication {
   * by removing it, pureEdgeSim will use the default model.
   * As you can see, this class extends the Main class provided by PureEdgeSim, which is required  for this example to work
   */
-	public Example2(int fromIteration, int step_) {
-		super(fromIteration, step_);
-	}
 
 	public static void main(String[] args) { 
 		/* To use your custom mobility model, do this:

@@ -10,9 +10,6 @@ public class Example5 extends MainApplication {
 	 * folder. As you can see, this class extends the Main class provided by
 	 * PureEdgeSim, which is required for this example to work.
 	 */
-	public Example5(int fromIteration, int step_) {
-		super(fromIteration, step_);
-	}
 
 	public static void main(String[] args) {
 		/*
