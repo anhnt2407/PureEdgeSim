@@ -56,6 +56,8 @@ public class SimulationManager extends CloudSimEntity {
 		// Create Broker
 		broker = createBroker();
 
+		simLog.initialize(this, scenario.getDevicesCount(), scenario.getOrchAlgorithm(), scenario.getOrchArchitecture());
+
 		// Show real time results during the simulation
 		if (simulationParameters.DISPLAY_REAL_TIME_CHARTS && !simulationParameters.PARALLEL)
 			simulationVisualizer = new SimulationVisualizer(this);
@@ -67,6 +69,19 @@ public class SimulationManager extends CloudSimEntity {
 				+ "-  Architechitecture= " + scenario.getOrchArchitecture() + " -  number of edge devices= "
 				+ scenario.getDevicesCount());
 		simulation.start();
+
+		/*
+		if (!simulationParameters.PARALLEL) {
+			// Take a few seconds pause to show the results
+			simLog.print(simulationParameters.PAUSE_LENGTH + " seconds pause...");
+			for (int k = 1; k <= simulationParameters.PAUSE_LENGTH; k++) {
+				simLog.printSameLine(".");
+				Thread.sleep(1000);
+			}
+			SimLog.println("");
+		}
+		*/
+		SimLog.println("\nSimulation finished...\n\n###########################################################################");
 	}
 
 	@Override

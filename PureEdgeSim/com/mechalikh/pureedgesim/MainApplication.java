@@ -74,88 +74,67 @@ public class MainApplication {
 
 		Date startDate = Calendar.getInstance().getTime();
 
+		String startTime = new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss").format(new Date());
+		List<SimulationManager> simulationManagers = new ArrayList<>();
+
+		int simulationId = 0;
+		int iteration = 0;
 		for (String orchestrationAlgorithm : simulationParameters.ORCHESTRATION_ALGORITHMS) {
 			for (String orchestrationArchitecture : simulationParameters.ORCHESTRATION_ARCHITECTURES) {
 				for (int devicesCount = simulationParameters.MIN_NUM_OF_EDGE_DEVICES;
 					 devicesCount <= simulationParameters.MAX_NUM_OF_EDGE_DEVICES;
 					 devicesCount += simulationParameters.EDGE_DEVICE_COUNTER_STEP) {
-					scenarios.add(new Scenario(devicesCount, orchestrationAlgorithm, orchestrationArchitecture));
+
+					try {
+						scenarios.add(new Scenario(devicesCount, orchestrationAlgorithm, orchestrationArchitecture));
+
+						CloudSim simulation = new CloudSim();
+						SimLog simLog = new SimLog(startTime, scenarioLog);
+
+						SimulationManager simulationManager = new SimulationManager(simLog, simulation, simulationId, iteration, scenarios.get(simulationId));
+						simulationManagers.add(simulationManager);
+
+						// Generate all data centers, servers, an devices
+						ServersManager serversManager = new ServersManager(simulationManager, mobilityManager, energyModel, edgedatacenter);
+						serversManager.generateDatacentersAndDevices();
+						simulationManager.setServersManager(serversManager);
+
+						// Generate tasks list
+						Constructor<?> TasksGeneratorConstructor = tasksGenerator.getConstructor(SimulationManager.class);
+						TasksGenerator tasksGenerator = (TasksGenerator) TasksGeneratorConstructor.newInstance(simulationManager);
+						List<Task> tasksList = tasksGenerator.generate();
+						simulationManager.setTasksList(tasksList);
+
+						// Initialize the orchestrator
+						Constructor<?> OrchestratorConstructor = orchestrator.getConstructor(SimulationManager.class);
+						Orchestrator edgeOrchestrator = (Orchestrator) OrchestratorConstructor.newInstance(simulationManager);
+						simulationManager.setOrchestrator(edgeOrchestrator);
+
+						// Initialize the network model
+						Constructor<?> networkConstructor = networkModel.getConstructor(SimulationManager.class);
+						NetworkModel networkModel = (NetworkModel) networkConstructor.newInstance(simulationManager);
+						simulationManager.setNetworkModel(networkModel);
+					} catch (Exception e) {
+						e.printStackTrace();
+						SimLog.println("Main- The simulation has been terminated due to an unexpected error");
+					}
+
+					simulationId++;
 				}
 			}
 		}
 
 		try {
 			if (simulationParameters.PARALLEL) {
-				// TODO Reimplement parallel execution
-				// simulationList.parallelStream().forEach(MainApplication::startSimulation);
-			} else { // Sequential execution
-				new MainApplication().startSimulation();
+				simulationManagers.parallelStream().forEach(SimulationManager::startSimulation);
+			} else {
+				simulationManagers.forEach(SimulationManager::startSimulation);
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
 			SimLog.println("Main- The simulation has been terminated due to an unexpected error");
 		}
 
-		// Simulation Finished
-		Date endDate = Calendar.getInstance().getTime();
-		SimLog.println("Main- Simulation took : " + simulationTime(startDate, endDate));
-		SimLog.println("Main- results were saved to the folder: " + outputFolder);
-	}
-
-	public void startSimulation() throws Exception {
-		// File name prefix
-		String startTime = new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss").format(new Date());
-		int iteration = 0;
-		SimulationManager simulationManager;
-		for (int simulationId = 0; simulationId < scenarios.size(); simulationId++) {
-			// New simlog for each simulation (when parallelism is enabled
-			SimLog simLog = new SimLog(startTime, scenarioLog);
-
-			// New simulation instance
-			CloudSim simulation = new CloudSim();
-
-			// Initialize the simulation manager
-			simulationManager = new SimulationManager(simLog, simulation, simulationId, iteration, scenarios.get(simulationId));
-
-			simLog.initialize(simulationManager, scenarios.get(simulationId).getDevicesCount(),
-					scenarios.get(simulationId).getOrchAlgorithm(), scenarios.get(simulationId).getOrchArchitecture());
-
-			// Generate all data centers, servers, an devices
-			ServersManager serversManager = new ServersManager(simulationManager, mobilityManager, energyModel, edgedatacenter);
-			serversManager.generateDatacentersAndDevices();
-			simulationManager.setServersManager(serversManager);
-
-			// Generate tasks list
-			Constructor<?> TasksGeneratorConstructor = tasksGenerator.getConstructor(SimulationManager.class);
-			TasksGenerator tasksGenerator = (TasksGenerator) TasksGeneratorConstructor.newInstance(simulationManager);
-			List<Task> tasksList = tasksGenerator.generate();
-			simulationManager.setTasksList(tasksList);
-
-			// Initialize the orchestrator
-			Constructor<?> OrchestratorConstructor = orchestrator.getConstructor(SimulationManager.class);
-			Orchestrator edgeOrchestrator = (Orchestrator) OrchestratorConstructor.newInstance(simulationManager);
-			simulationManager.setOrchestrator(edgeOrchestrator);
-
-			// Initialize the network model
-			Constructor<?> networkConstructor = networkModel.getConstructor(SimulationManager.class);
-			NetworkModel networkModel = (NetworkModel) networkConstructor.newInstance(simulationManager);
-			simulationManager.setNetworkModel(networkModel);
-
-			// Finally launch the simulation
-			simulationManager.startSimulation();
-
-			if (!simulationParameters.PARALLEL) {
-				// Take a few seconds pause to show the results
-				simLog.print(simulationParameters.PAUSE_LENGTH + " seconds pause...");
-				for (int k = 1; k <= simulationParameters.PAUSE_LENGTH; k++) {
-					simLog.printSameLine(".");
-					Thread.sleep(1000);
-				}
-				SimLog.println("");
-			}
-			iteration++;
-			SimLog.println("\nIteration finished...\n\n###########################################################################");
-		}
 		SimLog.println("Main- Simulation Finished!");
 
 		// Generate and save charts
@@ -164,6 +143,11 @@ public class MainApplication {
 			ChartsGenerator chartsGenerator = new ChartsGenerator(SimLog.getFileName(".csv", startTime, scenarios.size() - 1));
 			chartsGenerator.generate();
 		}
+
+		// Simulation Finished
+		Date endDate = Calendar.getInstance().getTime();
+		SimLog.println("Main- Simulation took : " + simulationTime(startDate, endDate));
+		SimLog.println("Main- results were saved to the folder: " + outputFolder);
 	}
 
 	private static String simulationTime(Date startDate, Date endDate) {
