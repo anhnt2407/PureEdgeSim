@@ -89,27 +89,27 @@ public abstract class Orchestrator {
 		sendTask(task, findVM(Architecture, task));
 	}
 
-	protected abstract int findVM(String[] architecture, Task task);
+	protected abstract Vm findVM(String[] architecture, Task task);
 
-	protected void sendTask(Task task, int vm) {
+	protected void sendTask(Task task, Vm vm) {
 		// assign the tasks to the vm found
 		assignTaskToVm(vm, task);
 
 		// Offload it only if resources are available (i.e. the offloading destination is available)
 		if (task.getVm() != Vm.NULL) // Send the task to execute it
-			task.getEdgeDevice().getVmTaskMap().add(new VmTaskMapItem((Vm) task.getVm(), task));
+			task.getEdgeDevice().getVmTaskMap().add(new VmTaskMapItem(task.getVm(), task));
 	}
 
-	protected void assignTaskToVm(int vmIndex, Task task) {
-		if (vmIndex == -1) {
+	protected void assignTaskToVm(Vm vm, Task task) {
+		if (vm == Vm.NULL) {
 			simLog.incrementTasksFailedLackOfRessources(task);
 		} else {
-			task.setVm(vmList.get(vmIndex)); // send this task to this vm
+			task.setVm(vm); // send this task to this vm
 			simLog.deepLog(simulationManager.getSimulation().clock() + " : EdgeOrchestrator, Task: " + task.getId()
-					+ " assigned to " + ((EdgeDataCenter)vmList.get(vmIndex).getHost().getDatacenter()).getType() + " vm: " + vmList.get(vmIndex).getId());
+					+ " assigned to " + ((EdgeDataCenter) vm.getHost().getDatacenter()).getType() + " vm: " + vm.getId());
 
 			// update history
-			orchestrationHistory.get(vmIndex).add(task.getId());
+			orchestrationHistory.get(vm.getId()).add(task.getId());
 		}
 	}
 
