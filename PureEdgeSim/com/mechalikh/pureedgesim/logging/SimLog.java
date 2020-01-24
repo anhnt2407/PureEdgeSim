@@ -7,12 +7,10 @@ import java.io.IOException;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Locale;
+import java.util.*;
 
 import com.mechalikh.pureedgesim.core.SimulationManager;
+import org.cloudbus.cloudsim.hosts.Host;
 import org.cloudbus.cloudsim.vms.Vm;
 
 import com.mechalikh.pureedgesim.MainApplication;
@@ -135,7 +133,9 @@ public class SimLog {
 				+ padLeftSpaces("" + tasksExecutedOnEdge, 14) + " tasks (where "
 				+ (tasksExecutedOnEdge - tasksFailedEdge) + " were successfully executed )");
 
-		scenarioLog.addToResultsList(currentOrchArchitecture + "," + currentOrchAlgorithm + "," + currentEdgeDevicesCount + ","
+		scenarioLog.addToResultsList(currentOrchArchitecture + ","
+				+ currentOrchAlgorithm + ","
+				+ currentEdgeDevicesCount + ","
 				+ decimalFormat.format(totalExecutionTime) + ","
 				+ decimalFormat.format(totalExecutionTime / executedTasksCount) + ","
 				+ decimalFormat.format(totalWaitingTime) + ","
@@ -164,9 +164,14 @@ public class SimLog {
 		print("                                                            Average bandwidth per transfer="
 				+ padLeftSpaces(decimalFormat.format(totalBandwidth / transfersCount), 10) + " Mbps  ");
 		// Add these values to the las item of the results list
-		scenarioLog.appendToLastResult(totalLanUsage + "," + totalWanUsage + "," + totalLanUsage + "," +
-				totalTraffic + "," + containersWanUsage + "," + containersLanUsage + "," +
-				(totalBandwidth / transfersCount) + ",");
+		scenarioLog.appendToLastResult(totalLanUsage + ","
+				+ totalWanUsage + ","
+				+ totalLanUsage + ","
+				+ totalTraffic + ","
+				+ containersWanUsage
+				+ ","
+				+ containersLanUsage + ","
+				+ (totalBandwidth / transfersCount) + ",");
 	}
 
 	public void printResourcesUtilizationResults(List<Task> finishedTasks) {
@@ -198,10 +203,16 @@ public class SimLog {
 				averageFogCpuUtilization += dc.getTotalCpuUtilization();
 			} else if (dc.getType() == simulationParameters.TYPES.EDGE) {
 				edgeEnConsumption += dc.getEnergyModel().getTotalEnergyConsumption();
-				if (dc.getVmList().size() > 0) {
-					// only devices with computing capability
-					// the devices that have no VM are considered simple sensors, and will not be
-					// counted here
+
+
+				// TODO This is a fragile assumption
+				// only devices with computing capability the devices that have no VM are considered
+				// simple sensors, and will not be counted here
+				List<Vm> hi = new ArrayList<>();
+				for (Host host : dc.getHostList()) {
+					hi.addAll(host.getVmList());
+				}
+				if (hi.size() > 0) {
 					averageEdgeCpuUtilization += dc.getTotalCpuUtilization();
 					edgeDevicesCount++;
 				}

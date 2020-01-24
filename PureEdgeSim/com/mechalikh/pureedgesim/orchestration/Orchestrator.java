@@ -107,7 +107,7 @@ public abstract class Orchestrator {
 					+ " assigned to " + ((EdgeDataCenter) vm.getHost().getDatacenter()).getType() + " vm: " + vm.getId());
 
 			// update history
-			orchestrationHistory.get(vm.getId()).add(task.getId());
+			orchestrationHistory.get((int) vm.getId()).add((int) task.getId());
 		}
 	}
 

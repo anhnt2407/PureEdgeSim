@@ -118,7 +118,7 @@ public class SimulationVisualizer {
 			if (edgeDataCenter.getType() == TYPES.CLOUD) {
 				clUsage = edgeDataCenter.getTotalCpuUtilization();
 
-			} else if (edgeDataCenter.getType() == TYPES.EDGE && edgeDataCenter.getVmList().size() > 0) {
+			} else if (edgeDataCenter.getType() == TYPES.EDGE && edgeDataCenter.getHostList().size() > 0) {
 				edUsage += edgeDataCenter.getTotalCpuUtilization();
 				edgecount++;
 

@@ -219,17 +219,23 @@ public class SimulationManager extends CloudSimEntity {
 	}
 
 	private void sendResultsToOchestrator(Task task) {
-		if (taskFailed(task, 2))
+		if (taskFailed(task, 2)) {
 			return;
+		}
 		// If the task was offloaded
 		if (task.getEdgeDevice().getId() != task.getVm().getHost().getDatacenter().getId()) {
 			scheduleNow(networkModel, NetworkModel.SEND_RESULT_TO_ORCH, task);
-
 		} else { // The task has been executed locally / no offloading
 			scheduleNow(this, RESULT_RETURN_FINISHED, task);
 		}
+
+		// TODO This is probably not the right place to do this?
+		task.addOnFinishListener(this::onTaskFinishListener);
+	}
+
+	private void onTaskFinishListener(CloudletVmEventInfo eventInfo) {
 		// update tasks execution and waiting delays
-		simLog.getTasksExecutionInfos(task);
+		simLog.getTasksExecutionInfos((Task) eventInfo.getCloudlet());
 	}
 
 	private void sendFromOrchToDestination(Task task) {

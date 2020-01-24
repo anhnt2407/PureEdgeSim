@@ -14,6 +14,7 @@ import com.mechalikh.pureedgesim.mobility.Mobility;
 import com.mechalikh.pureedgesim.scenariomanager.simulationParameters;
 import com.mechalikh.pureedgesim.core.SimulationManager;
 import com.mechalikh.pureedgesim.orchestration.VmTaskMapItem;
+import org.cloudbus.cloudsim.vms.Vm;
 
 public class EdgeDataCenter extends DatacenterSimple {
 
@@ -73,16 +74,21 @@ public class EdgeDataCenter extends DatacenterSimple {
 		currentCpuUtilization = 0;
 
 		// get the cpu usage of all vms
-		for (int i = 0; i < this.getVmList().size(); i++) {
-			double vmUsage = this.getVmList().get(i).getCloudletScheduler()
+		List<Vm> vms = new ArrayList<>();
+		for (Host host : getHostList()) {
+			vms.addAll(host.getVmList());
+		}
+
+		for (Vm vm : vms) {
+			double vmUsage = vm.getCloudletScheduler()
 					.getRequestedCpuPercentUtilization(simulationManager.getSimulation().clock());
 			currentCpuUtilization += vmUsage; // the current utilization
 			totalCpuUtilization += vmUsage;
 			utilizationFrequency++; // in order to get the average usage from the total usage
 		}
 
-		if (this.getVmList().size() > 0) {
-			currentCpuUtilization = currentCpuUtilization / this.getVmList().size();
+		if (vms.size() > 0) {
+			currentCpuUtilization = currentCpuUtilization / vms.size();
 		}
 
 		// update the energy consumption
