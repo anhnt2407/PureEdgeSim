@@ -10,7 +10,6 @@ import java.util.List;
 import com.mechalikh.pureedgesim.logging.ScenarioLog;
 import org.cloudbus.cloudsim.core.CloudSim;
 import org.cloudsimplus.util.Log;
-import com.mechalikh.pureedgesim.datacenter.DefaultEdgeDataCenter;
 import com.mechalikh.pureedgesim.energy.EnergyModel;
 import com.mechalikh.pureedgesim.core.ServersManager;
 import com.mechalikh.pureedgesim.mobility.Mobility;
@@ -29,7 +28,6 @@ import com.mechalikh.pureedgesim.tasksgenerator.TasksGenerator;
 import com.mechalikh.pureedgesim.orchestration.TradeOffOrchestrator;
 import com.mechalikh.pureedgesim.orchestration.Orchestrator;
 import com.mechalikh.pureedgesim.energy.DefaultEnergyModel;
-import com.mechalikh.pureedgesim.datacenter.EdgeDataCenter;
 
 import ch.qos.logback.classic.Level;
 
@@ -40,7 +38,6 @@ public class MainApplication {
 	protected static List<Scenario> scenarios = new ArrayList<>();
 
 	protected static Class<? extends Mobility> mobilityManagerClass = DefaultMobilityModel.class;
-	protected static Class<? extends EdgeDataCenter> edgeDataCenterClass = DefaultEdgeDataCenter.class;
 	protected static Class<? extends TasksGenerator> tasksGeneratorClass = DefaultTasksGenerator.class;
 	protected static Class<? extends Orchestrator> orchestratorClass = TradeOffOrchestrator.class;
 	protected static Class<? extends EnergyModel> energyModelClass = DefaultEnergyModel.class;
@@ -93,7 +90,7 @@ public class MainApplication {
 						simulationManagers.add(simulationManager);
 
 						// Generate all data centers, servers, an devices
-						ServersManager serversManager = new ServersManager(simulationManager, mobilityManagerClass, energyModelClass, edgeDataCenterClass);
+						ServersManager serversManager = new ServersManager(simulationManager, mobilityManagerClass, energyModelClass);
 						serversManager.generateDatacentersAndDevices();
 						simulationManager.setServersManager(serversManager);
 
@@ -165,10 +162,6 @@ public class MainApplication {
 
 	public static String getOutputFolder() {
 		return outputFolder;
-	}
-
-	protected static void setEdgeDataCenter(Class<? extends EdgeDataCenter> edgeDataCenterClass) {
-		MainApplication.edgeDataCenterClass = edgeDataCenterClass;
 	}
 
 	protected static void setTasksGenerator(Class<? extends TasksGenerator> tasksGeneratorClass) {

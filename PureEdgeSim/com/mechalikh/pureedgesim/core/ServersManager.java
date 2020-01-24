@@ -42,19 +42,16 @@ public class ServersManager {
 	private SimulationManager simulationManager;
 	private Class<? extends Mobility> mobilityManagerClass;
 	private Class<? extends EnergyModel> energyModelClass;
-	private Class<? extends EdgeDataCenter> edgeDataCenterClass;
 
 	public ServersManager(SimulationManager simulationManager,
 						  Class<? extends Mobility> mobilityManagerClass,
-						  Class<? extends EnergyModel> energyModelClass,
-						  Class<? extends EdgeDataCenter> edgeDataCenterClass) {
+						  Class<? extends EnergyModel> energyModelClass) {
 		datacentersList = new ArrayList<>();
 		orchestratorsList = new ArrayList<>();
 		vmList = new ArrayList<>();
 		this.simulationManager = simulationManager;
 		this.mobilityManagerClass = mobilityManagerClass;
 		this.energyModelClass = energyModelClass;
-		this.edgeDataCenterClass = edgeDataCenterClass;
 	}
 
 	public void generateDatacentersAndDevices() throws Exception {
@@ -163,9 +160,7 @@ public class ServersManager {
 
 	private EdgeDataCenter createDatacenter(Element datacenterElement, simulationParameters.TYPES level) throws Exception {
 		List<Host> hostList = createHosts(datacenterElement, level);
-
-		Constructor<? extends Datacenter> datacenterConstructor = edgeDataCenterClass.getConstructor(SimulationManager.class, List.class);
-		EdgeDataCenter datacenter = (EdgeDataCenter) datacenterConstructor.newInstance(getSimulationManager(), hostList);
+		EdgeDataCenter datacenter = new EdgeDataCenter(getSimulationManager(), hostList);
 
 		if (level == simulationParameters.TYPES.FOG || level == simulationParameters.TYPES.EDGE) {
 			int x_position;
@@ -183,7 +178,7 @@ public class ServersManager {
 			}
 			Location datacenterLocation = new Location(x_position, y_position);
 			Constructor<?> mobilityConstructor = mobilityManagerClass.getConstructor(Location.class);
-			datacenter.setMobilityManager(mobilityConstructor.newInstance(datacenterLocation));
+			datacenter.setMobilityManager((Mobility) mobilityConstructor.newInstance(datacenterLocation));
 		}
 
 		datacenter.setOrchestrator(Boolean.parseBoolean(datacenterElement.getElementsByTagName("isOrchestrator").item(0).getTextContent()));
@@ -192,7 +187,7 @@ public class ServersManager {
 		Constructor<?> energyConstructor = energyModelClass.getConstructor(double.class, double.class);
 		double idleConsumption = Double.parseDouble(datacenterElement.getElementsByTagName("idleConsumption").item(0).getTextContent());
 		double maxConsumption = Double.parseDouble(datacenterElement.getElementsByTagName("maxConsumption").item(0).getTextContent());
-		datacenter.setEnergyModel(energyConstructor.newInstance(maxConsumption, idleConsumption));
+		datacenter.setEnergyModel((EnergyModel) energyConstructor.newInstance(maxConsumption, idleConsumption));
 
 		return datacenter;
 	}

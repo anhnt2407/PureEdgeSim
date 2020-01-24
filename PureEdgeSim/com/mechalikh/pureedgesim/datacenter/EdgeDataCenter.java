@@ -5,6 +5,7 @@ import java.util.List;
 
 import com.mechalikh.pureedgesim.energy.EnergyModel;
 import org.cloudbus.cloudsim.allocationpolicies.VmAllocationPolicySimple;
+import org.cloudbus.cloudsim.core.events.SimEvent;
 import org.cloudbus.cloudsim.datacenters.DatacenterSimple;
 import org.cloudbus.cloudsim.hosts.Host;
 
@@ -14,7 +15,7 @@ import com.mechalikh.pureedgesim.scenariomanager.simulationParameters;
 import com.mechalikh.pureedgesim.core.SimulationManager;
 import com.mechalikh.pureedgesim.orchestration.VmTaskMapItem;
 
-public abstract class EdgeDataCenter extends DatacenterSimple {
+public class EdgeDataCenter extends DatacenterSimple {
 
 	protected static final int UPDATE_STATUS = 2000; // Avoid conflicting with CloudSim Plus Tags
 
@@ -31,10 +32,9 @@ public abstract class EdgeDataCenter extends DatacenterSimple {
 	protected boolean isDead = false;  // TODO Move to energy model
 	protected double deathTime;  // TODO Move to energy model
 
-	protected EdgeDataCenter orchestrator; // TODO ???
 	protected boolean isIdle = true;
-	protected int applicationType;  // This is not used anywhere but may be interesting to keep
 	protected boolean isOrchestrator = false;
+	protected int applicationType;  // This is not used anywhere but may be interesting to keep
 
 	// TODO All these should be removed as this is host-level information
 	protected int utilizationFrequency = 0;
@@ -47,7 +47,31 @@ public abstract class EdgeDataCenter extends DatacenterSimple {
 		vmTaskMap = new ArrayList<>();
 	}
 
-	protected void updateEnergyConsumption() {
+	@Override
+	public void startEntity() {
+		super.startEntity();
+		schedule(this, simulationParameters.INITIALIZATION_TIME, UPDATE_STATUS);
+	}
+
+	@Override
+	public void processEvent(final SimEvent ev) {
+		if (ev.getTag() == UPDATE_STATUS) {// Update energy consumption
+			updateEnergyConsumption();
+
+			// Update location
+			if (isMobile()) {
+				getMobilityManager().getNextLocation();
+			}
+
+			if (!isDead()) {
+				schedule(this, simulationParameters.UPDATE_INTERVAL, UPDATE_STATUS);
+			}
+		} else {
+			super.processEvent(ev);
+		}
+	}
+
+	protected void updateEnergyConsumption() {  // TODO Move to energy model
 		setIdle(true);
 		double vmUsage = 0;
 		currentCpuUtilization = 0;
@@ -177,16 +201,11 @@ public abstract class EdgeDataCenter extends DatacenterSimple {
 		return mobilityManager;
 	}
 
-	public void setMobilityManager(Object mobilityManager) {
-		this.mobilityManager = (Mobility) mobilityManager;
+	public void setMobilityManager(Mobility mobilityManager) {
+		this.mobilityManager = mobilityManager;
 	}
 
-	public void setEnergyModel(Object energyModel) {
-		this.energyModel = (EnergyModel) energyModel;
-
-	}
-
-	public EdgeDataCenter getOrchestrator() {
-		return this.orchestrator;
+	public void setEnergyModel(EnergyModel energyModel) {
+		this.energyModel = energyModel;
 	}
 }
