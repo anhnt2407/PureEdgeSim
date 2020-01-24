@@ -2,10 +2,7 @@ package com.mechalikh.pureedgesim;
 
 import java.lang.reflect.Constructor;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 import com.mechalikh.pureedgesim.logging.ScenarioLog;
 import org.cloudbus.cloudsim.core.CloudSim;
@@ -32,6 +29,10 @@ import com.mechalikh.pureedgesim.energy.DefaultEnergyModel;
 import ch.qos.logback.classic.Level;
 
 public class MainApplication {
+
+	// TODO Temporary solution: All random numbers are generated with this object to assure reproducibility
+	public static Random random = new Random(0);
+
 	protected static String outputFolder = "PureEdgeSim/output/";
 
 	protected static ScenarioLog scenarioLog = new ScenarioLog();

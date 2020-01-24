@@ -1,14 +1,13 @@
 package com.mechalikh.pureedgesim.mobility;
 
-import java.util.Random;
-
+import com.mechalikh.pureedgesim.MainApplication;
 import com.mechalikh.pureedgesim.scenariomanager.simulationParameters;
 
 public class DefaultMobilityModel extends Mobility {
 	private boolean pause = false;
 	private double pauseDuration = -1;
-	private double mobilityDuration = new Random().nextInt(100);
-	private int orientationAngle = new Random().nextInt(359);
+	private double mobilityDuration = MainApplication.random.nextInt(100);
+	private int orientationAngle = MainApplication.random.nextInt(359);
 
 	public DefaultMobilityModel(Location currentLocation) {
 		super(currentLocation);
@@ -67,25 +66,25 @@ public class DefaultMobilityModel extends Mobility {
 
 	private void pause() {
 		// Pickup random duration from 50 to 200 seconds
-		pauseDuration = 50 + new Random().nextInt(100);
+		pauseDuration = 50 + MainApplication.random.nextInt(100);
 		// Pause mobility (the device will stay in its location for the randomly
 		// generated duration
 		pause = true;
 		// Reorientate the device to a new direction
-		orientationAngle = new Random().nextInt(359);
+		orientationAngle = MainApplication.random.nextInt(359);
 		// The mobility will be resumed for the following period of time
-		mobilityDuration = new Random().nextInt(100);
+		mobilityDuration = MainApplication.random.nextInt(100);
 	}
 
 	private void check_boundaries(double x_position, double y_position) {
 		if (x_position >= simulationParameters.AREA_HEIGHT)
-			orientationAngle = -90 - new Random().nextInt(180);
+			orientationAngle = -90 - MainApplication.random.nextInt(180);
 		else if (x_position <= 0)
-			orientationAngle = -90 + new Random().nextInt(180);
+			orientationAngle = -90 + MainApplication.random.nextInt(180);
 		if (y_position >= simulationParameters.AREA_WIDTH)
-			orientationAngle = -new Random().nextInt(180);
+			orientationAngle = - MainApplication.random.nextInt(180);
 		else if (y_position <= 0)
-			orientationAngle = new Random().nextInt(180);
+			orientationAngle = MainApplication.random.nextInt(180);
 	}
 
 	public Location getCurrentLocation() {

@@ -4,14 +4,13 @@ import java.io.File;
 import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
+import com.mechalikh.pureedgesim.MainApplication;
 import com.mechalikh.pureedgesim.datacenter.EdgeDataCenter;
 import com.mechalikh.pureedgesim.energy.EnergyModel;
-import org.cloudbus.cloudsim.datacenters.Datacenter;
 import org.cloudbus.cloudsim.hosts.Host;
 import org.cloudbus.cloudsim.hosts.HostSimple;
 import org.cloudbus.cloudsim.provisioners.PeProvisionerSimple;
@@ -173,8 +172,8 @@ public class ServersManager {
 				datacenter.setMobile(Boolean.parseBoolean(datacenterElement.getElementsByTagName("mobility").item(0).getTextContent()));
 				datacenter.setBattery(Boolean.parseBoolean(datacenterElement.getElementsByTagName("battery").item(0).getTextContent()));
 				datacenter.setBatteryCapacity(Double.parseDouble(datacenterElement.getElementsByTagName("batterycapacity").item(0).getTextContent()));
-				x_position = new Random().nextInt(simulationParameters.AREA_WIDTH);
-				y_position = new Random().nextInt(simulationParameters.AREA_HEIGHT);
+				x_position = MainApplication.random.nextInt(simulationParameters.AREA_WIDTH);
+				y_position = MainApplication.random.nextInt(simulationParameters.AREA_HEIGHT);
 			}
 			Location datacenterLocation = new Location(x_position, y_position);
 			Constructor<? extends Mobility> mobilityConstructor = mobilityManagerClass.getConstructor(Location.class);

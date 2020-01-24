@@ -1,7 +1,8 @@
 package com.mechalikh.pureedgesim.tasksgenerator;
 
 import java.util.List;
-import java.util.Random;
+
+import com.mechalikh.pureedgesim.MainApplication;
 import org.cloudbus.cloudsim.utilizationmodels.UtilizationModel;
 import org.cloudbus.cloudsim.utilizationmodels.UtilizationModelFull;
 
@@ -17,12 +18,12 @@ public class DefaultTasksGenerator extends TasksGenerator {
 		datacentersList = datacentersList.subList(datacentersList.size() - getSimulationManager().getScenario().getDevicesCount(), datacentersList.size());
 		double simulationTime = simulationParameters.SIMULATION_TIME / 60; // in minutes
 		for (int dev = 0; dev < getSimulationManager().getScenario().getDevicesCount(); dev++) { // for each device
-			int app = new Random().nextInt(simulationParameters.APPS_COUNT); // pickup a random application type for every device
+			int app = MainApplication.random.nextInt(simulationParameters.APPS_COUNT); // pickup a random application type for every device
 			datacentersList.get(dev).setApplication(app); // assign this application to that device
 			for (int st = 0; st < simulationTime; st++) { // for each minute
 				// generating tasks
 				int time = st * 60;
-				time += new Random().nextInt(59);// pickup random second in this minute "st";
+				time += MainApplication.random.nextInt(59);// pickup random second in this minute "st";
 
 				// Shift the time by the defined value "INITIALIZATION_TIME"
 				// in order to start after generating all the resources
