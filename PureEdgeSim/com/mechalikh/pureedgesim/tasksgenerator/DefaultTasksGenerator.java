@@ -14,14 +14,10 @@ public class DefaultTasksGenerator extends TasksGenerator {
 	}
 
 	public List<Task> generate() {
-		datacentersList = datacentersList.subList(
-				datacentersList.size() - getSimulationManager().getScenario().getDevicesCount(),
-				datacentersList.size());
+		datacentersList = datacentersList.subList(datacentersList.size() - getSimulationManager().getScenario().getDevicesCount(), datacentersList.size());
 		double simulationTime = simulationParameters.SIMULATION_TIME / 60; // in minutes
 		for (int dev = 0; dev < getSimulationManager().getScenario().getDevicesCount(); dev++) { // for each device
-
-			int app = new Random().nextInt(simulationParameters.APPS_COUNT); // pickup a random application type for
-																				// every device
+			int app = new Random().nextInt(simulationParameters.APPS_COUNT); // pickup a random application type for every device
 			datacentersList.get(dev).setApplication(app); // assign this application to that device
 			for (int st = 0; st < simulationTime; st++) { // for each minute
 				// generating tasks

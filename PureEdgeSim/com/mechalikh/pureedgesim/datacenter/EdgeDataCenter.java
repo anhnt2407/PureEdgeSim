@@ -29,10 +29,8 @@ public class EdgeDataCenter extends DatacenterSimple {
 	protected EnergyModel energyModel;
 	protected boolean isBatteryPowered = false;  // TODO Move to energy model
 	protected double batteryCapacity;  // TODO Move to energy model
-	protected boolean isDead = false;  // TODO Move to energy model
 	protected double deathTime;  // TODO Move to energy model
 
-	protected boolean isIdle = true;
 	protected boolean isOrchestrator = false;
 	protected int applicationType;  // This is not used anywhere but may be interesting to keep
 
@@ -72,29 +70,25 @@ public class EdgeDataCenter extends DatacenterSimple {
 	}
 
 	protected void updateEnergyConsumption() {  // TODO Move to energy model
-		setIdle(true);
-		double vmUsage = 0;
 		currentCpuUtilization = 0;
 
 		// get the cpu usage of all vms
 		for (int i = 0; i < this.getVmList().size(); i++) {
-			vmUsage = this.getVmList().get(i).getCloudletScheduler()
+			double vmUsage = this.getVmList().get(i).getCloudletScheduler()
 					.getRequestedCpuPercentUtilization(simulationManager.getSimulation().clock());
 			currentCpuUtilization += vmUsage; // the current utilization
 			totalCpuUtilization += vmUsage;
 			utilizationFrequency++; // in order to get the average usage from the total usage
-			if (vmUsage != 0)
-				setIdle(false); // set as active (not idle) if at least one vm is used
 		}
 
-		if (this.getVmList().size() > 0)
+		if (this.getVmList().size() > 0) {
 			currentCpuUtilization = currentCpuUtilization / this.getVmList().size();
+		}
 
 		// update the energy consumption
 		this.getEnergyModel().updateCpuEnergyConsumption(currentCpuUtilization);
 
-		if (isBattery() && this.getEnergyModel().getTotalEnergyConsumption() > batteryCapacity) {
-			isDead = true;
+		if (isDead()) {
 			deathTime = simulationManager.getSimulation().clock();
 		}
 	}
@@ -152,7 +146,7 @@ public class EdgeDataCenter extends DatacenterSimple {
 	}
 
 	public boolean isDead() {
-		return isDead;
+		return isBattery() && this.getEnergyModel().getTotalEnergyConsumption() > batteryCapacity;
 	}
 
 	public double getDeathTime() {
@@ -187,14 +181,6 @@ public class EdgeDataCenter extends DatacenterSimple {
 
 	public double getCurrentCpuUtilization() {
 		return currentCpuUtilization * 100;
-	}
-
-	public boolean isIdle() {
-		return isIdle;
-	}
-
-	public void setIdle(boolean isIdle) {
-		this.isIdle = isIdle;
 	}
 
 	public Mobility getMobilityManager() {

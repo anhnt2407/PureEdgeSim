@@ -177,17 +177,17 @@ public class ServersManager {
 				y_position = new Random().nextInt(simulationParameters.AREA_HEIGHT);
 			}
 			Location datacenterLocation = new Location(x_position, y_position);
-			Constructor<?> mobilityConstructor = mobilityManagerClass.getConstructor(Location.class);
-			datacenter.setMobilityManager((Mobility) mobilityConstructor.newInstance(datacenterLocation));
+			Constructor<? extends Mobility> mobilityConstructor = mobilityManagerClass.getConstructor(Location.class);
+			datacenter.setMobilityManager(mobilityConstructor.newInstance(datacenterLocation));
 		}
 
 		datacenter.setOrchestrator(Boolean.parseBoolean(datacenterElement.getElementsByTagName("isOrchestrator").item(0).getTextContent()));
 		datacenter.setType(level);
 
-		Constructor<?> energyConstructor = energyModelClass.getConstructor(double.class, double.class);
+		Constructor<? extends EnergyModel> energyConstructor = energyModelClass.getConstructor(double.class, double.class);
 		double idleConsumption = Double.parseDouble(datacenterElement.getElementsByTagName("idleConsumption").item(0).getTextContent());
 		double maxConsumption = Double.parseDouble(datacenterElement.getElementsByTagName("maxConsumption").item(0).getTextContent());
-		datacenter.setEnergyModel((EnergyModel) energyConstructor.newInstance(maxConsumption, idleConsumption));
+		datacenter.setEnergyModel(energyConstructor.newInstance(maxConsumption, idleConsumption));
 
 		return datacenter;
 	}
