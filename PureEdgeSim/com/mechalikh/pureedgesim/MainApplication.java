@@ -23,9 +23,9 @@ import com.mechalikh.pureedgesim.scenariomanager.simulationParameters;
 import com.mechalikh.pureedgesim.logging.ChartsGenerator;
 import com.mechalikh.pureedgesim.logging.SimLog;
 import com.mechalikh.pureedgesim.core.SimulationManager;
-import com.mechalikh.pureedgesim.loadgenerator.DefaultTasksGenerator;
-import com.mechalikh.pureedgesim.loadgenerator.Task;
-import com.mechalikh.pureedgesim.loadgenerator.TasksGenerator;
+import com.mechalikh.pureedgesim.tasksgenerator.DefaultTasksGenerator;
+import com.mechalikh.pureedgesim.tasksgenerator.Task;
+import com.mechalikh.pureedgesim.tasksgenerator.TasksGenerator;
 import com.mechalikh.pureedgesim.orchestration.TradeOffOrchestrator;
 import com.mechalikh.pureedgesim.orchestration.Orchestrator;
 import com.mechalikh.pureedgesim.energy.DefaultEnergyModel;
@@ -167,23 +167,23 @@ public class MainApplication {
 		return outputFolder;
 	}
 
-	protected static void setCustomEdgeDataCenters(Class<? extends EdgeDataCenter> edgeDataCenterClass) {
+	protected static void setEdgeDataCenter(Class<? extends EdgeDataCenter> edgeDataCenterClass) {
 		MainApplication.edgeDataCenterClass = edgeDataCenterClass;
 	}
 
-	protected static void setCustomTasksGenerator(Class<? extends TasksGenerator> tasksGeneratorClass) {
+	protected static void setTasksGenerator(Class<? extends TasksGenerator> tasksGeneratorClass) {
 		MainApplication.tasksGeneratorClass = tasksGeneratorClass;
 	}
 
-	protected static void setCustomEdgeOrchestrator(Class<? extends Orchestrator> orchestratorClass) {
+	protected static void setOrchestrator(Class<? extends Orchestrator> orchestratorClass) {
 		MainApplication.orchestratorClass = orchestratorClass;
 	}
 
-	protected static void setCustomMobilityModel(Class<? extends Mobility> mobilityManagerClass) {
+	protected static void setMobilityModel(Class<? extends Mobility> mobilityManagerClass) {
 		MainApplication.mobilityManagerClass = mobilityManagerClass;
 	}
 
-	protected static void setCustomEnergyModel(Class<? extends EnergyModel> energyModelClass) {
+	protected static void setEnergyModel(Class<? extends EnergyModel> energyModelClass) {
 		MainApplication.energyModelClass = energyModelClass;
 	}
 

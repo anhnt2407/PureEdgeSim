@@ -1,4 +1,4 @@
-package com.mechalikh.pureedgesim.loadgenerator;
+package com.mechalikh.pureedgesim.tasksgenerator;
 
 import org.cloudbus.cloudsim.cloudlets.CloudletSimple;
 import com.mechalikh.pureedgesim.datacenter.EdgeDataCenter;

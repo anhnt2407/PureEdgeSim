@@ -15,43 +15,37 @@ import com.mechalikh.pureedgesim.core.SimulationManager;
 import com.mechalikh.pureedgesim.orchestration.VmTaskMapItem;
 
 public abstract class EdgeDataCenter extends DatacenterSimple {
+
 	protected static final int UPDATE_STATUS = 2000; // Avoid conflicting with CloudSim Plus Tags
-	protected simulationParameters.TYPES deviceType;
-	protected boolean isMobile = false;
-	protected boolean isBatteryPowered = false;
-	protected double batteryCapacity;
-	protected EnergyModel energyModel;
-	protected boolean isDead = false;
-	protected double deathTime;
-	protected List<VmTaskMapItem> vmTaskMap;
-	protected int applicationType;
-	protected boolean isOrchestrator = false;
-	protected long storageMemory;
-	protected long availableStorageMemory;
-	protected double totalCpuUtilization = 0;
-	protected int utilizationFrequency = 0;
-	protected boolean isIdle = true;
-	protected long ramMemory;
-	protected Mobility mobilityManager;
-	protected EdgeDataCenter orchestrator;
-	protected double currentCpuUtilization = 0;
+
 	protected SimulationManager simulationManager;
+	protected simulationParameters.TYPES deviceType;
+	protected List<VmTaskMapItem> vmTaskMap;
+
+	protected Mobility mobilityManager;
+	protected boolean isMobile = false;  // TODO Move to mobility model
+
+	protected EnergyModel energyModel;
+	protected boolean isBatteryPowered = false;  // TODO Move to energy model
+	protected double batteryCapacity;  // TODO Move to energy model
+	protected boolean isDead = false;  // TODO Move to energy model
+	protected double deathTime;  // TODO Move to energy model
+
+	protected EdgeDataCenter orchestrator; // TODO ???
+	protected boolean isIdle = true;
+	protected int applicationType;  // This is not used anywhere but may be interesting to keep
+	protected boolean isOrchestrator = false;
+
+	// TODO All these should be removed as this is host-level information
+	protected int utilizationFrequency = 0;
+	protected double totalCpuUtilization = 0;  // This is only used for logging and charts
+	protected double currentCpuUtilization = 0;  // This is used nowhere
 
 	public EdgeDataCenter(SimulationManager simulationManager, List<? extends Host> hostList) {
 		super(simulationManager.getSimulation(), hostList,new VmAllocationPolicySimple());
 		this.simulationManager = simulationManager;
 		vmTaskMap = new ArrayList<>();
-
-		long memory = 0;
-		long ram = 0;
-		for (Host host : hostList) {
-			memory += host.getStorage().getAvailableResource();
-			ram += host.getRam().getCapacity();
-		}
-		setStorageMemory(memory);
-		setRamMemory(ram);
 	}
- 
 
 	protected void updateEnergyConsumption() {
 		setIdle(true);
@@ -159,31 +153,6 @@ public abstract class EdgeDataCenter extends DatacenterSimple {
 
 	public void setOrchestrator(boolean isOrchestrator) {
 		this.isOrchestrator = isOrchestrator;
-	}
-
-	public long getStorageMemory() {
-		return storageMemory;
-	}
-
-	public void setStorageMemory(long storage) {
-		this.storageMemory = storage;
-		setAvailableMemory(storage);
-	}
-
-	public long getRam() {
-		return ramMemory;
-	}
-
-	public void setRamMemory(long ram) {
-		this.ramMemory = ram;
-	}
-
-	public long getAvailableMemory() {
-		return availableStorageMemory;
-	}
-
-	public void setAvailableMemory(long availableMemory) {
-		this.availableStorageMemory = availableMemory;
 	}
 
 	public double getTotalCpuUtilization() {

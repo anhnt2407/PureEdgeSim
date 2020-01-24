@@ -1,10 +1,8 @@
 package com.mechalikh.pureedgesim.orchestration;
 
 import com.mechalikh.pureedgesim.datacenter.EdgeDataCenter;
-import com.mechalikh.pureedgesim.logging.SimLog;
 import com.mechalikh.pureedgesim.core.SimulationManager;
-import com.mechalikh.pureedgesim.loadgenerator.Task;
-import com.mechalikh.pureedgesim.orchestration.Orchestrator;
+import com.mechalikh.pureedgesim.tasksgenerator.Task;
 import org.cloudbus.cloudsim.vms.Vm;
 
 public class IncreaseLifetimeOrchestrator extends Orchestrator {

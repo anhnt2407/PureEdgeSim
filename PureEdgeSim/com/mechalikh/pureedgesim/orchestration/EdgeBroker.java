@@ -6,7 +6,7 @@ import org.cloudbus.cloudsim.core.CloudSimTags;
 import org.cloudbus.cloudsim.core.events.SimEvent;
 
 import com.mechalikh.pureedgesim.core.SimulationManager;
-import com.mechalikh.pureedgesim.loadgenerator.Task;
+import com.mechalikh.pureedgesim.tasksgenerator.Task;
 
 public class EdgeBroker extends DatacenterBrokerSimple {
 

@@ -10,7 +10,7 @@ import com.mechalikh.pureedgesim.scenariomanager.simulationParameters;
 import com.mechalikh.pureedgesim.scenariomanager.simulationParameters.TYPES;
 import com.mechalikh.pureedgesim.logging.SimLog;
 import com.mechalikh.pureedgesim.core.SimulationManager;
-import com.mechalikh.pureedgesim.loadgenerator.Task;
+import com.mechalikh.pureedgesim.tasksgenerator.Task;
 
 public abstract class Orchestrator {
 	protected List<List<Integer>> orchestrationHistory;

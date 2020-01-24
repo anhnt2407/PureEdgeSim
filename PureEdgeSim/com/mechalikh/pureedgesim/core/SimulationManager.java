@@ -14,7 +14,7 @@ import com.mechalikh.pureedgesim.network.NetworkModel;
 import com.mechalikh.pureedgesim.scenariomanager.Scenario;
 import com.mechalikh.pureedgesim.scenariomanager.simulationParameters;
 import com.mechalikh.pureedgesim.scenariomanager.simulationParameters.TYPES;
-import com.mechalikh.pureedgesim.loadgenerator.Task;
+import com.mechalikh.pureedgesim.tasksgenerator.Task;
 import com.mechalikh.pureedgesim.orchestration.EdgeBroker;
 import com.mechalikh.pureedgesim.orchestration.Orchestrator;
 

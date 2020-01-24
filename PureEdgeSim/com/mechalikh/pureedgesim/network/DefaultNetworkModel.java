@@ -7,7 +7,7 @@ import com.mechalikh.pureedgesim.energy.DefaultEnergyModel;
 import com.mechalikh.pureedgesim.scenariomanager.simulationParameters;
 import com.mechalikh.pureedgesim.scenariomanager.simulationParameters.TYPES;
 import com.mechalikh.pureedgesim.core.SimulationManager;
-import com.mechalikh.pureedgesim.loadgenerator.Task;
+import com.mechalikh.pureedgesim.tasksgenerator.Task;
 
 public class DefaultNetworkModel extends NetworkModel {
 

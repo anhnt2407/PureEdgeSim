@@ -1,7 +1,9 @@
 package examples;
 
 import com.mechalikh.pureedgesim.MainApplication;
+import com.mechalikh.pureedgesim.core.SimulationManager;
 import com.mechalikh.pureedgesim.orchestration.IncreaseLifetimeOrchestrator;
+import com.mechalikh.pureedgesim.orchestration.Orchestrator;
 
 public class Example5 extends MainApplication {
 	/**
@@ -17,7 +19,6 @@ public class Example5 extends MainApplication {
 		 * class can be found in the examples folder. by removing this line, pureEdgeSim
 		 * will use the default orchestrator class.
 		 */
-		setCustomEdgeOrchestrator(IncreaseLifetimeOrchestrator.class);
 
 		/*
 		 * This custom class uses another orchestrator algorithm called
@@ -30,7 +31,7 @@ public class Example5 extends MainApplication {
 		 * to the simulation parameters file (under the settings/ folder). To use the
 		 * PureEdgeSim default edge orchestrator class you can also uncomment this:
 		 */
-		// setCustomEdgeOrchestrator(DefaultEdgeOrchestrator.class);
+		setOrchestrator(IncreaseLifetimeOrchestrator.class);
 
 		// Start the simulation
 		launchSimulation();

@@ -2,7 +2,7 @@ package com.mechalikh.pureedgesim.orchestration;
  
 import org.cloudbus.cloudsim.vms.Vm;
 
-import com.mechalikh.pureedgesim.loadgenerator.Task;
+import com.mechalikh.pureedgesim.tasksgenerator.Task;
 
 public class VmTaskMapItem {
 

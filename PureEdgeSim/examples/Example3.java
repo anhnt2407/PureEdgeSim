@@ -16,7 +16,7 @@ public class Example3 extends MainApplication {
 		 * be found in the examples folder as well. by removing this line, pureEdgeSim
 		 * will use the default energy model. *
 		 */
-		setCustomEnergyModel(CustomEnergyModel.class);
+		setEnergyModel(CustomEnergyModel.class);
 
 		// To use the PureEdgeSim default Energy Model you can also uncomment this:
 		// setCustomEnergyModel(DefaultEnergyModel.class);

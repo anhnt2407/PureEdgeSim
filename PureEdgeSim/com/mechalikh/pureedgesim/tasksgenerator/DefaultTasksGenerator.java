@@ -1,4 +1,4 @@
-package com.mechalikh.pureedgesim.loadgenerator;
+package com.mechalikh.pureedgesim.tasksgenerator;
 
 import java.util.List;
 import java.util.Random;

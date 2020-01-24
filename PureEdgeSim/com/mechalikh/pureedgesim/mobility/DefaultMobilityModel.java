@@ -32,7 +32,7 @@ public class DefaultMobilityModel extends Mobility {
 		if (simulationParameters.SPEED > 0) { // The speed must be > 0 in order to move/change the location
 
 			// Make sure that the device stay in the simulation area
-			Reoriotate(X_position, Y_position);
+			check_boundaries(X_position, Y_position);
 
 			if (mobilityDuration <= 0) {
 				pause();
@@ -77,7 +77,7 @@ public class DefaultMobilityModel extends Mobility {
 		mobilityDuration = new Random().nextInt(100);
 	}
 
-	private void Reoriotate(double x_position, double y_position) {
+	private void check_boundaries(double x_position, double y_position) {
 		if (x_position >= simulationParameters.AREA_HEIGHT)
 			orientationAngle = -90 - new Random().nextInt(180);
 		else if (x_position <= 0)

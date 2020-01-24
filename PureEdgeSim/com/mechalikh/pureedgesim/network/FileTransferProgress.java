@@ -1,6 +1,6 @@
 package com.mechalikh.pureedgesim.network;
 
-import com.mechalikh.pureedgesim.loadgenerator.Task;
+import com.mechalikh.pureedgesim.tasksgenerator.Task;
 
 public class FileTransferProgress {
 	public static enum Type {

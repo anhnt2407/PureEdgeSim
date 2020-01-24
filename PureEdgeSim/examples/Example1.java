@@ -1,8 +1,10 @@
 package examples;
 
-import com.mechalikh.pureedgesim.MainApplication; 
-import com.mechalikh.pureedgesim.loadgenerator.DefaultTasksGenerator;
+import com.mechalikh.pureedgesim.MainApplication;
+import com.mechalikh.pureedgesim.core.SimulationManager;
+import com.mechalikh.pureedgesim.tasksgenerator.DefaultTasksGenerator;
 import com.mechalikh.pureedgesim.orchestration.IncreaseLifetimeOrchestrator;
+import com.mechalikh.pureedgesim.orchestration.Orchestrator;
 
 public class Example1 extends MainApplication {
 	/**
@@ -16,21 +18,19 @@ public class Example1 extends MainApplication {
 
 	public static void main(String[] args) {
 		// To change the mobility model
-		setCustomMobilityModel(CustomMobilityManager.class);
-
-		// To change the tasks orchestrator
-		setCustomEdgeOrchestrator(IncreaseLifetimeOrchestrator.class);
+		setMobilityModel(CustomMobilityManager.class);
 
 		// To change the tasks generator
-		setCustomTasksGenerator(DefaultTasksGenerator.class);
+		setTasksGenerator(DefaultTasksGenerator.class);
 
 		// To use a custom edge device/datacenters class
-		setCustomEdgeDataCenters(CustomEdgeDataCenter.class);
+		setEdgeDataCenter(CustomEdgeDataCenter.class);
 
 		// To use a custom energy model
-		setCustomEnergyModel(CustomEnergyModel.class);
+		setEnergyModel(CustomEnergyModel.class);
 
 		/* to use the default one you can simply delete or comment those lines */
+		setOrchestrator(IncreaseLifetimeOrchestrator.class);
 
 		// Finally,you can launch the simulation
 		launchSimulation();

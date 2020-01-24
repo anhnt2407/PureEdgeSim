@@ -11,6 +11,7 @@ import javax.xml.parsers.DocumentBuilderFactory;
 
 import com.mechalikh.pureedgesim.datacenter.EdgeDataCenter;
 import com.mechalikh.pureedgesim.energy.EnergyModel;
+import org.cloudbus.cloudsim.datacenters.Datacenter;
 import org.cloudbus.cloudsim.hosts.Host;
 import org.cloudbus.cloudsim.hosts.HostSimple;
 import org.cloudbus.cloudsim.provisioners.PeProvisionerSimple;
@@ -163,7 +164,7 @@ public class ServersManager {
 	private EdgeDataCenter createDatacenter(Element datacenterElement, simulationParameters.TYPES level) throws Exception {
 		List<Host> hostList = createHosts(datacenterElement, level);
 
-		Constructor<?> datacenterConstructor = edgeDataCenterClass.getConstructor(SimulationManager.class, List.class);
+		Constructor<? extends Datacenter> datacenterConstructor = edgeDataCenterClass.getConstructor(SimulationManager.class, List.class);
 		EdgeDataCenter datacenter = (EdgeDataCenter) datacenterConstructor.newInstance(getSimulationManager(), hostList);
 
 		if (level == simulationParameters.TYPES.FOG || level == simulationParameters.TYPES.EDGE) {

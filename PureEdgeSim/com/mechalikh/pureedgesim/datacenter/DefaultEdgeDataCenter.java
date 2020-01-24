@@ -42,7 +42,7 @@ public class DefaultEdgeDataCenter extends EdgeDataCenter {
 		}
 	}
 
-	protected void updateEnergyConsumption() {
+	protected void updateEnergyConsumption() {  // TODO Move to energy model
 		setIdle(true);
 		double vmUsage = 0;
 		currentCpuUtilization = 0;

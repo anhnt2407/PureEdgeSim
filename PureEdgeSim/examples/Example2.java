@@ -14,7 +14,7 @@ public class Example2 extends MainApplication {
 		The custom mobility manager class can be found in the examples folder as well.
 		 by removing this line, pureEdgeSim will use the default mobility model.  
 		*/
-		setCustomMobilityModel(CustomMobilityManager.class);  
+		setMobilityModel(CustomMobilityManager.class);
 
 		// To use the PureEdgeSim default Mobility Manager you can also uncomment this: 
 		// setCustomMobilityModel(MobilityManager.class);  

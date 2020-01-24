@@ -1,13 +1,10 @@
 package com.mechalikh.pureedgesim.orchestration;
 
-import java.util.List;
-
 import org.cloudbus.cloudsim.vms.Vm;
 import com.mechalikh.pureedgesim.datacenter.EdgeDataCenter;
 import com.mechalikh.pureedgesim.scenariomanager.simulationParameters;
-import com.mechalikh.pureedgesim.logging.SimLog;
 import com.mechalikh.pureedgesim.core.SimulationManager;
-import com.mechalikh.pureedgesim.loadgenerator.Task;
+import com.mechalikh.pureedgesim.tasksgenerator.Task;
 
 public class TradeOffOrchestrator extends Orchestrator {
 	public TradeOffOrchestrator(SimulationManager simulationManager) {
