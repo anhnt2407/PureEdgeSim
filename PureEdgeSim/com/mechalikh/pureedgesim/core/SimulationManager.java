@@ -17,6 +17,7 @@ import com.mechalikh.pureedgesim.scenariomanager.simulationParameters.TYPES;
 import com.mechalikh.pureedgesim.tasksgenerator.Task;
 import com.mechalikh.pureedgesim.orchestration.EdgeBroker;
 import com.mechalikh.pureedgesim.orchestration.Orchestrator;
+import org.cloudsimplus.listeners.CloudletVmEventInfo;
 
 public class SimulationManager extends CloudSimEntity {
 	public static final int Base = 1000; // avoid conflict with CloudSim Plus tags
@@ -66,11 +67,13 @@ public class SimulationManager extends CloudSimEntity {
 
 	// Start simulation
 	public void startSimulation() {
-		simLog.print("SimulationManager-  Orchestration algorithm= " + scenario.getOrchAlgorithm()
-				+ "-  Architechitecture= " + scenario.getOrchArchitecture() + " -  number of edge devices= "
-				+ scenario.getDevicesCount());
+		simLog.print("SimulationManager"
+				+ "-  Orchestration algorithm= " + scenario.getOrchAlgorithm()
+				+ "-  Architechitecture= " + scenario.getOrchArchitecture()
+				+ "-  Number of edge devices= " + scenario.getDevicesCount());
 		simulation.start();
 
+		// TODO Reimplement pause (?)
 		/*
 		if (!simulationParameters.PARALLEL) {
 			// Take a few seconds pause to show the results
@@ -173,7 +176,7 @@ public class SimulationManager extends CloudSimEntity {
 			schedule(this, simulationParameters.UPDATE_INTERVAL, UPDATE_REAL_TIME_CHARTS);
 			break;
 
-		case PRINT_LOG:
+		case PRINT_LOG:  // TODO This shouldn't be an event
 			// Print results when simulation is over
 			List<Task> finishedTasks = broker.getCloudletFinishedList();
 

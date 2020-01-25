@@ -41,7 +41,7 @@ public class FilesParser {
 			simulationParameters.INITIALIZATION_TIME = Double
 					.parseDouble(prop.getProperty("initialization_time").trim()); // seconds
 			simulationParameters.SIMULATION_TIME = simulationParameters.INITIALIZATION_TIME
-					+ (double) 60 * Double.parseDouble(prop.getProperty("simulation_time").trim()); // seconds
+					+ Double.parseDouble(prop.getProperty("simulation_time").trim()); // seconds
 
 			simulationParameters.DISPLAY_REAL_TIME_CHARTS = Boolean
 					.parseBoolean(prop.getProperty("display_real_time_charts").trim());

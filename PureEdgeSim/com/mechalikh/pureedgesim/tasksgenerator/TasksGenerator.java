@@ -28,5 +28,5 @@ public abstract class TasksGenerator {
 		this.simulationManager = simulationManager;
 	}
 
-	public abstract List<Task> generate() ;
+	public abstract List<Task> generate();
 }
