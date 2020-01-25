@@ -24,8 +24,9 @@ public class EdgeDataCenter extends DatacenterSimple {
 	protected simulationParameters.TYPES deviceType;
 	protected List<VmTaskMapItem> vmTaskMap;
 
+	// TODO This should only exist on edge datacenters
 	protected Mobility mobilityManager;
-	protected boolean isMobile = false;  // TODO Move to mobility model
+	protected boolean isMobile = false;  // TODO Should be determined via mobilityManager != Mobility.NULL
 
 	protected EnergyModel energyModel;
 	protected boolean isBatteryPowered = false;  // TODO Move to energy model
@@ -35,10 +36,9 @@ public class EdgeDataCenter extends DatacenterSimple {
 	protected boolean isOrchestrator = false;
 	protected int applicationType;  // This is not used anywhere but may be interesting to keep
 
-	// TODO All these should be removed as this is host-level information
+	// TODO These are only used for logging and charts and should be implemented via host.getUtilizationHistory()
+	protected double totalCpuUtilization = 0;
 	protected int utilizationFrequency = 0;
-	protected double totalCpuUtilization = 0;  // This is only used for logging and charts
-	protected double currentCpuUtilization = 0;  // This is used nowhere
 
 	public EdgeDataCenter(SimulationManager simulationManager, List<? extends Host> hostList) {
 		super(simulationManager.getSimulation(), hostList,new VmAllocationPolicySimple());
@@ -71,7 +71,7 @@ public class EdgeDataCenter extends DatacenterSimple {
 	}
 
 	protected void updateEnergyConsumption() {  // TODO Move to energy model
-		currentCpuUtilization = 0;
+		double currentCpuUtilization = 0;
 
 		// get the cpu usage of all vms
 		List<Vm> vms = new ArrayList<>();
@@ -183,10 +183,6 @@ public class EdgeDataCenter extends DatacenterSimple {
 		if (utilizationFrequency == 0)
 			utilizationFrequency = 1;
 		return totalCpuUtilization * 100 / utilizationFrequency;
-	}
-
-	public double getCurrentCpuUtilization() {
-		return currentCpuUtilization * 100;
 	}
 
 	public Mobility getMobilityManager() {

@@ -7,13 +7,14 @@ import com.mechalikh.pureedgesim.core.SimulationManager;
 
 public abstract class TasksGenerator {
 	protected List<Task> taskList;
-	protected List<? extends EdgeDataCenter> datacentersList;
+	protected List<? extends EdgeDataCenter> edgeDataCenters;
 	private SimulationManager simulationManager;
 
 	public TasksGenerator(SimulationManager simulationManager) {
-		taskList = new ArrayList<>();
-		this.setSimulationManager(simulationManager);
-		this.datacentersList = this.getSimulationManager().getServersManager().getDatacenterList();
+		this.taskList = new ArrayList<>();
+		this.simulationManager = simulationManager;
+		List<EdgeDataCenter> allDcs = this.getSimulationManager().getServersManager().getDatacenterList();
+		this.edgeDataCenters = allDcs.subList(allDcs.size() - getSimulationManager().getScenario().getDevicesCount(), allDcs.size());
 	}
 
 	public List<Task> getTaskList() {
