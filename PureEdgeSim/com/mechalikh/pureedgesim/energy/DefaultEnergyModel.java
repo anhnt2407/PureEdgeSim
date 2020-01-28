@@ -5,11 +5,6 @@ import com.mechalikh.pureedgesim.network.FileTransferProgress;
 import com.mechalikh.pureedgesim.scenariomanager.simulationParameters;
 import com.mechalikh.pureedgesim.scenariomanager.simulationParameters.TYPES;
 
-/*
- * The adopted energy model can be found in the paper
- * Abidi, W., Lirathni, H., & Ezzedine, T. (2017). 
- * EEZC : Energy Efficient Zone based Clustering protocol for Heterogeneous Wireless Sensor Networks.
- */
 public class DefaultEnergyModel extends EnergyModel {
 	public static final int TRANSMISSION = 0;
 	public static final int RECEPTION = 1; 
@@ -23,16 +18,6 @@ public class DefaultEnergyModel extends EnergyModel {
 	// Energy consumption of the transmit amplifier in multipath fading channel
 	// model ( in joul per bit per meter^4 : J/bit/m^4)
 	private double E_mp = simulationParameters.AMPLIFIER_DISSIPATION_MULTIPATH;
- 
-	public DefaultEnergyModel(double maxActiveConsumption, double idleConsumption) {
-		super(maxActiveConsumption, idleConsumption); 
-	}
-
-	public void updateCpuEnergyConsumption(double cpuUtilization) {
-		double consumption = idleConsumption
-				+ (maxActiveConsumption * cpuUtilization) * simulationParameters.UPDATE_INTERVAL;
-		this.cpuEnergyConsumption += consumption;
-	}
 
 	public void updatewirelessEnergyConsumption(FileTransferProgress file, EdgeDataCenter device1,
 			EdgeDataCenter device2, int flag) {

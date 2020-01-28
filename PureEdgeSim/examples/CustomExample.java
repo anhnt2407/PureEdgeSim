@@ -17,7 +17,7 @@ public class CustomExample extends MainApplication {
 		 * be found in the examples folder as well. by removing this line, pureEdgeSim
 		 * will use the default energy model. *
 		 */
-		setEnergyModel(CustomEnergyModel.class);
+		// setEnergyModel(CustomEnergyModel.class);
 
 		/* To use your custom mobility model, do this:
 		The custom mobility manager class can be found in the examples folder as well.

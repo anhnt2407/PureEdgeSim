@@ -13,6 +13,7 @@ import com.mechalikh.pureedgesim.datacenter.EdgeDataCenter;
 import com.mechalikh.pureedgesim.energy.EnergyModel;
 import org.cloudbus.cloudsim.hosts.Host;
 import org.cloudbus.cloudsim.hosts.HostSimple;
+import org.cloudbus.cloudsim.power.models.PowerModelLinear;
 import org.cloudbus.cloudsim.provisioners.PeProvisionerSimple;
 import org.cloudbus.cloudsim.provisioners.ResourceProvisioner;
 import org.cloudbus.cloudsim.provisioners.ResourceProvisionerSimple;
@@ -105,8 +106,7 @@ public class ServersManager {
 			float devicesInstances = getSimulationManager().getScenario().getDevicesCount() * instancesPercentage / 100;
 
 			for (int j = 0; j < devicesInstances; j++) {
-				if (datacentersList.size() > getSimulationManager().getScenario().getDevicesCount()
-						+ simulationParameters.NUM_OF_FOG_DATACENTERS) {
+				if (datacentersList.size() > getSimulationManager().getScenario().getDevicesCount() + simulationParameters.NUM_OF_FOG_DATACENTERS) {
 					getSimulationManager().getSimulationLogger().print(
 							"ServersManager- Wrong percentages values (the sum is superior than 100%), check edge_devices.xml file !");
 					break;
@@ -183,10 +183,8 @@ public class ServersManager {
 		datacenter.setOrchestrator(Boolean.parseBoolean(datacenterElement.getElementsByTagName("isOrchestrator").item(0).getTextContent()));
 		datacenter.setType(level);
 
-		Constructor<? extends EnergyModel> energyConstructor = energyModelClass.getConstructor(double.class, double.class);
-		double idleConsumption = Double.parseDouble(datacenterElement.getElementsByTagName("idleConsumption").item(0).getTextContent());
-		double maxConsumption = Double.parseDouble(datacenterElement.getElementsByTagName("maxConsumption").item(0).getTextContent());
-		datacenter.setEnergyModel(energyConstructor.newInstance(maxConsumption, idleConsumption));
+		Constructor<? extends EnergyModel> energyConstructor = energyModelClass.getConstructor();
+		datacenter.setEnergyModel(energyConstructor.newInstance());
 
 		return datacenter;
 	}
@@ -260,6 +258,14 @@ public class ServersManager {
 				vm.setHost(host);
 				vmList.add(vm);
 			}
+
+			// TODO Temporary solution to provide PowerModel
+			double dcIdleConsumption = Double.parseDouble(datacenterElement.getElementsByTagName("idleConsumption").item(0).getTextContent());
+			double dcMaxConsumption = Double.parseDouble(datacenterElement.getElementsByTagName("maxConsumption").item(0).getTextContent());
+			double maxPower = dcMaxConsumption / hostNodeList.getLength();
+			double staticPowerPercent = dcIdleConsumption / hostNodeList.getLength() / maxPower;
+			host.setPowerModel(new PowerModelLinear(maxPower, staticPowerPercent));
+
 			hostList.add(host);
 		}
 

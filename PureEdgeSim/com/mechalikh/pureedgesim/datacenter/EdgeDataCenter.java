@@ -6,6 +6,7 @@ import java.util.List;
 import com.mechalikh.pureedgesim.energy.EnergyModel;
 import org.cloudbus.cloudsim.allocationpolicies.VmAllocationPolicySimple;
 import org.cloudbus.cloudsim.core.events.SimEvent;
+import org.cloudbus.cloudsim.datacenters.DatacenterPowerSupply;
 import org.cloudbus.cloudsim.datacenters.DatacenterSimple;
 import org.cloudbus.cloudsim.hosts.Host;
 
@@ -44,6 +45,7 @@ public class EdgeDataCenter extends DatacenterSimple {
 		super(simulationManager.getSimulation(), hostList,new VmAllocationPolicySimple());
 		this.simulationManager = simulationManager;
 		vmTaskMap = new ArrayList<>();
+		setPowerSupply(new DatacenterPowerSupply());
 	}
 
 	@Override
@@ -70,30 +72,18 @@ public class EdgeDataCenter extends DatacenterSimple {
 		}
 	}
 
-	protected void updateEnergyConsumption() {  // TODO Move to energy model
-		double currentCpuUtilization = 0;
-
+	protected void updateEnergyConsumption() {  // TODO Remove and implemented via host.getUtilizationHistory()
 		// get the cpu usage of all vms
-		List<Vm> vms = new ArrayList<>();
 		for (Host host : getHostList()) {
-			vms.addAll(host.getVmList());
+			for (Vm vm : host.getVmList()) {
+				double vmUsage = vm.getCloudletScheduler()
+						.getRequestedCpuPercentUtilization(simulationManager.getSimulation().clock());
+				totalCpuUtilization += vmUsage;
+				utilizationFrequency++; // in order to get the average usage from the total usage
+			}
 		}
 
-		for (Vm vm : vms) {
-			double vmUsage = vm.getCloudletScheduler()
-					.getRequestedCpuPercentUtilization(simulationManager.getSimulation().clock());
-			currentCpuUtilization += vmUsage; // the current utilization
-			totalCpuUtilization += vmUsage;
-			utilizationFrequency++; // in order to get the average usage from the total usage
-		}
-
-		if (vms.size() > 0) {
-			currentCpuUtilization = currentCpuUtilization / vms.size();
-		}
-
-		// update the energy consumption
-		this.getEnergyModel().updateCpuEnergyConsumption(currentCpuUtilization);
-
+		// TODO Where should this live and where do we need this information?
 		if (isDead()) {
 			deathTime = simulationManager.getSimulation().clock();
 		}
@@ -101,6 +91,11 @@ public class EdgeDataCenter extends DatacenterSimple {
 
 	public EnergyModel getEnergyModel() {
 		return energyModel;
+	}
+
+	@Override
+	public double getPower() throws UnsupportedOperationException {
+		return super.getPower() + this.getEnergyModel().getWirelessEnergyConsumption();
 	}
 
 	public simulationParameters.TYPES getType() {
@@ -142,9 +137,9 @@ public class EdgeDataCenter extends DatacenterSimple {
 	public double getBatteryLevel() {
 		if (!isBattery())
 			return 0;
-		if (batteryCapacity < this.getEnergyModel().getTotalEnergyConsumption())
+		if (batteryCapacity < getPower())
 			return 0;
-		return batteryCapacity - this.getEnergyModel().getTotalEnergyConsumption();
+		return batteryCapacity - getPower();
 	}
 
 	public double getBatteryLevelPercentage() {
@@ -152,7 +147,7 @@ public class EdgeDataCenter extends DatacenterSimple {
 	}
 
 	public boolean isDead() {
-		return isBattery() && this.getEnergyModel().getTotalEnergyConsumption() > batteryCapacity;
+		return isBattery() && getPower() > batteryCapacity;
 	}
 
 	public double getDeathTime() {
@@ -180,8 +175,9 @@ public class EdgeDataCenter extends DatacenterSimple {
 	}
 
 	public double getTotalCpuUtilization() {
-		if (utilizationFrequency == 0)
+		if (utilizationFrequency == 0) {
 			utilizationFrequency = 1;
+		}
 		return totalCpuUtilization * 100 / utilizationFrequency;
 	}
 

@@ -196,14 +196,13 @@ public class SimLog {
 
 		for (EdgeDataCenter dc : datacentersList) {
 			if (dc.getType() == simulationParameters.TYPES.CLOUD) {
-				cloudEnConsumption += dc.getEnergyModel().getTotalEnergyConsumption();
+				cloudEnConsumption += dc.getPower();
 				averageCloudCpuUtilization += dc.getTotalCpuUtilization();
 			} else if (dc.getType() == simulationParameters.TYPES.FOG) {
-				fogEnConsumption += dc.getEnergyModel().getTotalEnergyConsumption();
+				fogEnConsumption += dc.getPower();
 				averageFogCpuUtilization += dc.getTotalCpuUtilization();
 			} else if (dc.getType() == simulationParameters.TYPES.EDGE) {
-				edgeEnConsumption += dc.getEnergyModel().getTotalEnergyConsumption();
-
+				edgeEnConsumption += dc.getPower();
 
 				// TODO This is a fragile assumption
 				// only devices with computing capability the devices that have no VM are considered
