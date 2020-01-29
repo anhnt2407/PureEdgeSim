@@ -22,17 +22,13 @@ public class simulationParameters {
 	// Simulation area
 	public static int AREA_HEIGHT;
 	public static int AREA_WIDTH;
-	
+
 	// Edge devices, server,datacenters..
-	public static int NUM_OF_FOG_DATACENTERS;     // TODO Remove
-	public static int NUM_OF_CLOUD_DATACENTERS;   // TODO Remove
 	public static int MIN_NUM_OF_EDGE_DEVICES;    // Min number of edge devices
 	public static int MAX_NUM_OF_EDGE_DEVICES;    // Max number of edge devices  
 	public static int EDGE_DEVICE_COUNTER_STEP;   // Edge devices growing rate   
 	public static double SPEED;                   // Speed of mobile devices in meters per seconds m/s
-	public static enum TYPES {                    // Types of resources  
-		CLOUD, FOG, EDGE
-	};
+
 	
 	// Simulation logger parameters
 	public static boolean DEEP_LOGGING = false;   // Deep logging (to show every detail)
@@ -41,15 +37,14 @@ public class simulationParameters {
 	// Network parameters 
 	public static int BANDWIDTH_WLAN;             // wlan bandwidth (in kbits/s)
 	public static int WAN_BANDWIDTH;              // wan (cloud) bandwidth (in kbits/s) 
-	public static double POWER_CONS_PER_MEGABYTE; // Power consumption by every transferred MBytes (in Wh)
 	public static int EDGE_RANGE;                 // The range of edge devices (in meters)
 	public static int FOG_RANGE;                  // The range of fog servers (in meters)
 	public static double NETWORK_UPDATE_INTERVAL; // Network model update interval (in seconds) 
 	public static double WAN_PROPAGATION_DELAY;   // Wan propagation delay (in seconds)
 	
 	// Energy model parameters
-	public static double AMPLIFIER_DISSIPATION_FREE_SPACE; // The power consumption for each transferred bit (in joul per bit :  J/bit)
 	public static double CONSUMED_ENERGY_PER_BIT;          // Energy consumption of the transmit amplifier in free space channel model ( in  joul per bit per meter^2 : J/bit/m^2)
+	public static double AMPLIFIER_DISSIPATION_FREE_SPACE; // The power consumption for each transferred bit (in joul per bit :  J/bit)
 	public static double AMPLIFIER_DISSIPATION_MULTIPATH;  // Energy consumption of the transmit amplifier in multipath fading channel model ( in  joul per bit per meter^4 : J/bit/m^4)
 	
 	// Tasks orchestration parameters
@@ -58,7 +53,7 @@ public class simulationParameters {
 	public static String[] ORCHESTRATION_ALGORITHMS;     // Tasks orchestration algorithms
 	public static String[] ORCHESTRATION_ARCHITECTURES;  // The used paradigms : Cloud, Edge, Fog..
 	public static boolean ENABLE_REGISTRY;               // To download the container image or execute the task directly    
-	public static String registry_mode;                  // Where the containers will be downloaded from
+	public static String REGISTRY_MODE;                  // Where the containers will be downloaded from
 	public static String CPU_ALLOCATION_POLICY;          // CPU allocation policy : TIME_SHARED (results in long simulation time) or SPACE_SHARED
 	public static String DEPLOY_ORCHESTRATOR="";         // The location where the orchestrators are deployed (Edge devices, Cloud, Fog servers)
 	public static boolean WAIT_FOR_TASKS;                // After the end of the simulation time, some tasks may still not be executed yet,
@@ -66,4 +61,10 @@ public class simulationParameters {
                                                          // end the simulation when the predifined time ends.
 
 	public static ArrayList<Application> APPLICATIONS;
+
+	public static int NUM_OF_FOG_DATACENTERS;     // TODO Remove
+	public static int NUM_OF_CLOUD_DATACENTERS;   // TODO Remove
+	public static enum TYPES {                    // TODO Remove
+		CLOUD, FOG, EDGE
+	};
 }

@@ -61,7 +61,7 @@ public class MainApplication {
 		String simConfigfile = configPath + "/simulation_parameters.properties";
 		String applicationsFile = configPath + "/applications.yaml";
 		String datacentersFile = configPath + "/datacenters.yaml";
-		String edgeDevicesFile = configPath + "/edge.yaml";
+		String edgeDevicesFile = configPath + "/edge_devices.yaml";
 		SimLog.println("Main- Loading simulation files...");
 
 		simulationParameters.APPLICATIONS = FilesParser.getApplications(applicationsFile);
