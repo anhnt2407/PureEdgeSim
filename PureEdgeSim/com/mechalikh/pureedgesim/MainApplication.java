@@ -1,12 +1,11 @@
 package com.mechalikh.pureedgesim;
 
-import java.io.FileNotFoundException;
 import java.lang.reflect.Constructor;
 import java.text.SimpleDateFormat;
 import java.util.*;
-import java.util.stream.Collectors;
 
 import com.mechalikh.pureedgesim.configs.DatacenterConfig;
+import com.mechalikh.pureedgesim.configs.EdgeDatacenterConfig;
 import com.mechalikh.pureedgesim.logging.ScenarioLog;
 import org.cloudbus.cloudsim.core.CloudSim;
 import org.cloudsimplus.util.Log;
@@ -56,28 +55,25 @@ public class MainApplication {
 	}
 
 	public static void launchSimulation(String configPath) {
+		// Disable cloudsim plus log
+		Log.setLevel(Level.OFF);
+
 		String simConfigfile = configPath + "/simulation_parameters.properties";
 		String applicationsFile = configPath + "/applications.yaml";
 		String datacentersFile = configPath + "/datacenters.yaml";
-		String edgeDevicesFile = configPath + "/edge_devices.xml";
+		String edgeDevicesFile = configPath + "/edge.yaml";
 		SimLog.println("Main- Loading simulation files...");
 
 		simulationParameters.APPLICATIONS = FilesParser.getApplications(applicationsFile);
-		ArrayList<DatacenterConfig> datacenterConfigs = FilesParser.getCloudConfig(datacentersFile);
-		// TODO tmp
+		ArrayList<DatacenterConfig> datacenterConfigs = FilesParser.getDatacenterConfig(datacentersFile);
+		ArrayList<EdgeDatacenterConfig> edgeDatacenterConfigs = FilesParser.getEdgeDeviceConfig(edgeDevicesFile);
 
 		simulationParameters.NUM_OF_FOG_DATACENTERS = (int) datacenterConfigs.stream()
 				.filter(config -> config.getTag().equals("FOG")).count();
 		simulationParameters.NUM_OF_CLOUD_DATACENTERS = (int) datacenterConfigs.stream()
 				.filter(config -> config.getTag().equals("CLOUD")).count();
 
-		// Check files
-		FilesParser fp = new FilesParser();
-		if (!fp.checkFiles(simConfigfile, edgeDevicesFile))
-			Runtime.getRuntime().exit(0); // if files aren't correct stop everything.
-
-		// Disable cloudsim plus log
-		Log.setLevel(Level.OFF);
+		FilesParser.setSimulationProperties(simConfigfile);
 
 		Date startDate = Calendar.getInstance().getTime();
 
@@ -103,7 +99,7 @@ public class MainApplication {
 
 						// Generate all data centers, servers, an devices
 						ServersManager serversManager = new ServersManager(simulationManager, mobilityManagerClass, energyModelClass);
-						serversManager.generateDatacentersAndDevices(datacenterConfigs);
+						serversManager.generateDatacentersAndDevices(datacenterConfigs, edgeDatacenterConfigs);
 						simulationManager.setServersManager(serversManager);
 
 						// Generate tasks list

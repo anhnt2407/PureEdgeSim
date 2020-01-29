@@ -7,8 +7,6 @@ import java.util.ArrayList;
 
 public class simulationParameters {
 
-	public static String EDGE_DEVICES_FILE="";     // Edge devices xml file path
-
 	public static boolean PARALLEL = false;       // Enable parallelism
 	public static double SIMULATION_TIME;         // Simulation time (in seconds) 
 	public static int PAUSE_LENGTH;               // Pause between scenarios (in seconds)
@@ -26,7 +24,7 @@ public class simulationParameters {
 	public static int AREA_WIDTH;
 	
 	// Edge devices, server,datacenters..
-	public static int NUM_OF_FOG_DATACENTERS;     // Number of Fog data centers
+	public static int NUM_OF_FOG_DATACENTERS;     // TODO Remove
 	public static int NUM_OF_CLOUD_DATACENTERS;   // TODO Remove
 	public static int MIN_NUM_OF_EDGE_DEVICES;    // Min number of edge devices
 	public static int MAX_NUM_OF_EDGE_DEVICES;    // Max number of edge devices  

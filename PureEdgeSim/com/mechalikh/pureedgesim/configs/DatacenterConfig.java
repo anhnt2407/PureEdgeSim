@@ -1,5 +1,6 @@
 package com.mechalikh.pureedgesim.configs;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class DatacenterConfig {
@@ -9,7 +10,7 @@ public class DatacenterConfig {
     private String os = "Linux";
     private String vmm = "Xen";
     private boolean isOrchestrator = false;
-    private List<HostConfig> hosts;
+    private List<HostConfig> hosts = new ArrayList<>();
 
     public String getTag() {
         return tag;

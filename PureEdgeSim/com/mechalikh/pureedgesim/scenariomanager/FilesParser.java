@@ -1,31 +1,18 @@
 package com.mechalikh.pureedgesim.scenariomanager;
 
+import com.mechalikh.pureedgesim.configs.DatacenterConfig;
+import com.mechalikh.pureedgesim.configs.EdgeDatacenterConfig;
+import com.mechalikh.pureedgesim.logging.SimLog;
+import com.mechalikh.pureedgesim.tasksgenerator.Application;
+import org.yaml.snakeyaml.Yaml;
+
 import java.io.*;
 import java.util.ArrayList;
 import java.util.Properties;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-
-import com.mechalikh.pureedgesim.configs.DatacenterConfig;
-import com.mechalikh.pureedgesim.tasksgenerator.Application;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
- 
-import com.mechalikh.pureedgesim.scenariomanager.simulationParameters.TYPES;
-import com.mechalikh.pureedgesim.logging.SimLog;
-import org.yaml.snakeyaml.Yaml;
 
 public class FilesParser {
 
-	// Scan files
-	public boolean checkFiles(String simProp, String edgeFile) {
-		simulationParameters.EDGE_DEVICES_FILE = edgeFile;
-		return (checkSimulationProperties(simProp) && checkXmlFiles(edgeFile, TYPES.EDGE));
-	}
-
-	private boolean checkSimulationProperties(String simProp) {
+	public static boolean setSimulationProperties(String simProp) {
 		SimLog.println("FilesParser- Checking simulation properties file");
 		boolean result = false;
 		InputStream input = null;
@@ -122,79 +109,25 @@ public class FilesParser {
 
 	}
 
-	private boolean checkXmlFiles(String xmlFile, TYPES type) {
-		SimLog.println("FilesParser- Checking file: " + xmlFile);
-
-		try {
-			File devicesFile = new File(xmlFile);
-			DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
-			DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
-			Document xmlDoc = dBuilder.parse(devicesFile);
-			xmlDoc.getDocumentElement().normalize();
-
-			NodeList datacenterList = xmlDoc.getElementsByTagName("datacenter");
-			for (int i = 0; i < datacenterList.getLength(); i++) {
-
-				Node datacenterNode = datacenterList.item(i);
-
-				Element datacenterElement = (Element) datacenterNode;
-				isAttribtuePresent(datacenterElement, "arch");
-				isAttribtuePresent(datacenterElement, "os");
-				isAttribtuePresent(datacenterElement, "vmm");
-				isElementPresent(datacenterElement, "idleConsumption");
-				isElementPresent(datacenterElement, "maxConsumption");
-				if (type == TYPES.EDGE) {
-					isElementPresent(datacenterElement, "mobility");
-					isElementPresent(datacenterElement, "battery");
-					isElementPresent(datacenterElement, "percentage");
-					isElementPresent(datacenterElement, "batterycapacity");
-				} else {
-					simulationParameters.NUM_OF_FOG_DATACENTERS++;
-					Element location = (Element) datacenterElement.getElementsByTagName("location").item(0);
-					isElementPresent(location, "x_pos");
-					isElementPresent(location, "y_pos");
-				}
-
-				NodeList hostList = datacenterElement.getElementsByTagName("host");
-				for (int j = 0; j < hostList.getLength(); j++) {
-					Node hostNode = hostList.item(j);
-
-					Element hostElement = (Element) hostNode;
-					isElementPresent(hostElement, "core");
-					isElementPresent(hostElement, "mips");
-					isElementPresent(hostElement, "ram");
-					isElementPresent(hostElement, "storage");
-
-					NodeList vmList = hostElement.getElementsByTagName("VM");
-					for (int k = 0; k < vmList.getLength(); k++) {
-						Node vmNode = vmList.item(k);
-
-						Element vmElement = (Element) vmNode;
-						isAttribtuePresent(vmElement, "vmm");
-						isElementPresent(vmElement, "core");
-						isElementPresent(vmElement, "mips");
-						isElementPresent(vmElement, "ram");
-						isElementPresent(vmElement, "storage");
-					}
-				}
-			}
-
-		} catch (Exception e) {
-			e.printStackTrace();
-			SimLog.println("FilesParser- Failed to load edge devices file!");
-			return false;
-		}
-		SimLog.println("FilesParser- Edge devices XML file successfully Loaded!");
-		return true;
-	}
-
-	public static ArrayList<DatacenterConfig> getCloudConfig(String appFile) {
+	public static ArrayList<DatacenterConfig> getDatacenterConfig(String appFile) {
 		Yaml yaml = new Yaml();
 		InputStream input = null;
 		try {
 			input = new FileInputStream(new File(appFile));
 		} catch (FileNotFoundException e) {
-			SimLog.println("Error: Could not parse applications file.");
+			SimLog.println("Error: Could not parse datacenter file.");
+			System.exit(0);
+		}
+		return yaml.load(input);
+	}
+
+	public static ArrayList<EdgeDatacenterConfig> getEdgeDeviceConfig(String appFile) {
+		Yaml yaml = new Yaml();
+		InputStream input = null;
+		try {
+			input = new FileInputStream(new File(appFile));
+		} catch (FileNotFoundException e) {
+			SimLog.println("Error: Could not parse edge device file.");
 			System.exit(0);
 		}
 		return yaml.load(input);
@@ -211,25 +144,5 @@ public class FilesParser {
 		}
 		return yaml.load(input);
 	}
-
-	private void isElementPresent(Element element, String key) {
-		try {
-			String value = element.getElementsByTagName(key).item(0).getTextContent();
-			if (value == null || value.isEmpty()) {
-				throw new IllegalArgumentException(
-						"Element '" + key + "' is not found in '" + element.getNodeName() + "'");
-			}
-		} catch (Exception e) {
-			throw new IllegalArgumentException("Element '" + key + "' is not found in '" + element.getNodeName() + "'");
-		}
-	}
-
-	private void isAttribtuePresent(Element element, String key) {
-		String value = element.getAttribute(key);
-		if (value == null || value.isEmpty()) {
-			throw new IllegalArgumentException(
-					"Attribure '" + key + "' is not found in '" + element.getNodeName() + "'");
-		}
-	} 
 	 
 }

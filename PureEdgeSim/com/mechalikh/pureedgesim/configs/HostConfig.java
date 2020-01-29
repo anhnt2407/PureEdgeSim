@@ -1,5 +1,6 @@
 package com.mechalikh.pureedgesim.configs;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class HostConfig {
@@ -10,7 +11,7 @@ public class HostConfig {
     private int storage;
     private float idleConsumption;
     private float maxConsumption;
-    private List<VmConfig> vms;
+    private List<VmConfig> vms = new ArrayList<>();
 
     public int getCount() {
         return count;

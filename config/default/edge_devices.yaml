@@ -1,0 +1,70 @@
+- !!com.mechalikh.pureedgesim.configs.EdgeDatacenterConfig
+  tag: EDGE
+  mobility: false
+  battery: true
+  batteryCapacity: 15.75
+  percentage: 30
+  hosts:
+    - core: 2
+      mips: 2000
+      ram: 4000
+      storage: 10000
+      idleConsumption: 0.000005
+      maxConsumption: 0.0005
+      vms:
+        - vmm: Xen
+          core: 1
+          mips: 400
+          ram: 800
+          storage: 10000
+- !!com.mechalikh.pureedgesim.configs.EdgeDatacenterConfig
+  tag: EDGE
+  mobility: false
+  battery: false
+  batteryCapacity: 0
+  percentage: 20
+  hosts:
+    - core: 2
+      mips: 2000
+      ram: 4000
+      storage: 10000
+      idleConsumption: 0.000005
+      maxConsumption: 0.0005
+      vms:
+        - vmm: Xen
+          core: 1
+          mips: 800
+          ram: 1600
+          storage: 10000
+- !!com.mechalikh.pureedgesim.configs.EdgeDatacenterConfig
+  tag: EDGE
+  mobility: true
+  battery: true
+  batteryCapacity: 20
+  percentage: 20
+  hosts:
+    - core: 2
+      mips: 2000
+      ram: 4000
+      storage: 10000
+      idleConsumption: 0.000005
+      maxConsumption: 0.0005
+      vms:
+        - vmm: Xen
+          core: 1
+          mips: 400
+          ram: 500
+          storage: 2000
+- !!com.mechalikh.pureedgesim.configs.EdgeDatacenterConfig
+  tag: EDGE
+  mobility: false
+  battery: false
+  batteryCapacity: 0
+  percentage: 30
+  hosts:
+    - core: 2
+      mips: 2000
+      ram: 4000
+      storage: 0
+      idleConsumption: 0.000005
+      maxConsumption: 0.0005
