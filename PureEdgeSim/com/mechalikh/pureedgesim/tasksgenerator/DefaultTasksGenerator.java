@@ -18,7 +18,7 @@ public class DefaultTasksGenerator extends TasksGenerator {
 	public List<Task> generate() {
 		double simulationTime = simulationParameters.SIMULATION_TIME / 60; // in minutes
 		for (EdgeDataCenter dc : edgeDataCenters) { // for each device
-			int app = MainApplication.random.nextInt(simulationParameters.APPS_COUNT); // pickup a random application type for every device
+			Application app = simulationParameters.APPLICATIONS.get(MainApplication.random.nextInt(simulationParameters.APPLICATIONS.size()));
 			dc.setApplication(app); // assign this application to that device
 			for (int st = 0; st < simulationTime; st++) { // for each minute
 				// generating tasks
@@ -34,25 +34,18 @@ public class DefaultTasksGenerator extends TasksGenerator {
 		return this.getTaskList();
 	}
 
-	private void insert(int time, int app, EdgeDataCenter dc) {
-		double maxLatency = (long) simulationParameters.APPLICATIONS_TABLE[app][0]; // Load length from application file
-		long length = (long) simulationParameters.APPLICATIONS_TABLE[app][3]; // Load length from application file
-		long requestSize = (long) simulationParameters.APPLICATIONS_TABLE[app][1];
-		long outputSize = (long) simulationParameters.APPLICATIONS_TABLE[app][2];
-		int pesNumber = (int) simulationParameters.APPLICATIONS_TABLE[app][4];
-		long containerSize = (int) simulationParameters.APPLICATIONS_TABLE[app][5]; // the size of the container
+	private void insert(int time, Application app, EdgeDataCenter dc) {
 		Task[] task = new Task[simulationParameters.TASKS_PER_EDGE_DEVICE_PER_MINUTES];
-		int id;
 
 		// generate tasks for every edge device
 		for (int i = 0; i < simulationParameters.TASKS_PER_EDGE_DEVICE_PER_MINUTES; i++) {
-			id = taskList.size();
+			int id = taskList.size();
 			UtilizationModel utilizationModel = new UtilizationModelFull();
-			task[i] = new Task(id, length, pesNumber);
-			task[i].setFileSize(requestSize).setOutputSize(outputSize).setUtilizationModel(utilizationModel);
+			task[i] = new Task(id, app.getTaskLength(), app.getRequiredCore());
+			task[i].setFileSize(app.getRequestSize()).setOutputSize(app.getResultsSize()).setUtilizationModel(utilizationModel);
 			task[i].setTime(time);
-			task[i].setContainerSize(containerSize);
-			task[i].setMaxLatency(maxLatency);
+			task[i].setContainerSize(app.getContainerSize());
+			task[i].setMaxLatency(app.getMaxDelay());
 			task[i].setEdgeDevice(dc); // the device that generate this task (the origin)
 			taskList.add(task[i]);
 			getSimulationManager().getSimulationLogger()

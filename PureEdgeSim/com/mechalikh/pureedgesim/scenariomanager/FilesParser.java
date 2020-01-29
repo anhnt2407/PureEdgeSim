@@ -1,12 +1,12 @@
 package com.mechalikh.pureedgesim.scenariomanager;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
+import java.util.ArrayList;
 import java.util.Properties;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+
+import com.mechalikh.pureedgesim.tasksgenerator.Application;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -14,16 +14,17 @@ import org.w3c.dom.NodeList;
  
 import com.mechalikh.pureedgesim.scenariomanager.simulationParameters.TYPES;
 import com.mechalikh.pureedgesim.logging.SimLog;
+import org.yaml.snakeyaml.Yaml;
 
 public class FilesParser {
 
 	// Scan files
-	public boolean checkFiles(String simProp, String edgeFile, String fogFile, String appFile, String cloudFile) {
+	public boolean checkFiles(String simProp, String edgeFile, String fogFile, String cloudFile) {
 		simulationParameters.EDGE_DEVICES_FILE = edgeFile;
 		simulationParameters.FOG_SERVERS_FILE = fogFile;
 		simulationParameters.CLOUD_DATACENTERS_FILE = cloudFile;
 		return (checkSimulationProperties(simProp) && checkXmlFiles(edgeFile, TYPES.EDGE)
-				&& checkXmlFiles(fogFile, TYPES.FOG) && checkXmlFiles(cloudFile, TYPES.CLOUD) && checkAppFile(appFile));
+				&& checkXmlFiles(fogFile, TYPES.FOG) && checkXmlFiles(cloudFile, TYPES.CLOUD));
 	}
 
 	private boolean checkSimulationProperties(String simProp) {
@@ -191,61 +192,16 @@ public class FilesParser {
 		return true;
 	}
 
-	private boolean checkAppFile(String appFile) {
-		SimLog.println("FilesParser- Checking applications file");
-		Document doc;
+	public static ArrayList<Application> getApplications(String appFile) {
+		InputStream input = null;
 		try {
-			File devicesFile = new File(appFile);
-			DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
-			DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
-			doc = dBuilder.parse(devicesFile);
-			doc.getDocumentElement().normalize();
-
-			NodeList appList = doc.getElementsByTagName("application");
-			simulationParameters.APPS_COUNT = appList.getLength();// save the number of apps, this will be used later by
-																	// the tasks generator
-			simulationParameters.APPLICATIONS_TABLE= new double[appList.getLength()][6]; 
-			for (int i = 0; i < appList.getLength(); i++) {
-				Node appNode = appList.item(i);
-
-				Element appElement = (Element) appNode;
-				isAttribtuePresent(appElement, "name");
-				isElementPresent(appElement, "max_delay");
-				isElementPresent(appElement, "container_size");
-				isElementPresent(appElement, "request_size");
-				isElementPresent(appElement, "results_size");
-				isElementPresent(appElement, "task_length");
-				isElementPresent(appElement, "required_core"); 
-				
-				double max_delay = Double
-						.parseDouble(appElement.getElementsByTagName("max_delay").item(0).getTextContent());
-				double container_size = Double
-						.parseDouble(appElement.getElementsByTagName("container_size").item(0).getTextContent());
-				double request_size = Double
-						.parseDouble(appElement.getElementsByTagName("request_size").item(0).getTextContent());
-				double results_size = Double
-						.parseDouble(appElement.getElementsByTagName("results_size").item(0).getTextContent());
-				double task_length = Double
-						.parseDouble(appElement.getElementsByTagName("task_length").item(0).getTextContent());
-				double required_core = Double
-						.parseDouble(appElement.getElementsByTagName("required_core").item(0).getTextContent());
-				 
-				// save apps parameters
-				simulationParameters.APPLICATIONS_TABLE[i][0] = max_delay; // max delay in seconds
-				simulationParameters.APPLICATIONS_TABLE[i][1] = request_size; // avg request size (KB)
-				simulationParameters.APPLICATIONS_TABLE[i][2] = results_size; // avg downloaded results size (KB)
-				simulationParameters.APPLICATIONS_TABLE[i][3] = task_length; // avg task length (MI)
-				simulationParameters.APPLICATIONS_TABLE[i][4] = required_core; // required # of core
-				simulationParameters.APPLICATIONS_TABLE[i][5] = container_size; // the size of the container (KB)
-			}
-
-		} catch (Exception e) {
-			SimLog.println("FilesParser- Applications XML file cannot be parsed!");
+			input = new FileInputStream(new File(appFile));
+		} catch (FileNotFoundException e) {
+			SimLog.println("Error: Could not parse applications file.");
 			e.printStackTrace();
-			return false;
 		}
-		SimLog.println("FilesParser- Applications XML file successfully loaded!");
-		return true;
+		Yaml yaml = new Yaml();
+		return yaml.load(input);
 	}
 
 	private void isElementPresent(Element element, String key) {

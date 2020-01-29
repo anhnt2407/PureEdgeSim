@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.mechalikh.pureedgesim.energy.EnergyModel;
+import com.mechalikh.pureedgesim.tasksgenerator.Application;
 import org.cloudbus.cloudsim.allocationpolicies.VmAllocationPolicySimple;
 import org.cloudbus.cloudsim.core.events.SimEvent;
 import org.cloudbus.cloudsim.datacenters.DatacenterPowerSupply;
@@ -35,7 +36,7 @@ public class EdgeDataCenter extends DatacenterSimple {
 	protected double deathTime;  // TODO Move to energy model
 
 	protected boolean isOrchestrator = false;
-	protected int applicationType;  // This is not used anywhere but may be interesting to keep
+	protected Application application;  // This is not used anywhere but may be interesting to keep
 
 	// TODO These are only used for logging and charts and should be implemented via host.getUtilizationHistory()
 	protected double totalCpuUtilization = 0;
@@ -158,12 +159,12 @@ public class EdgeDataCenter extends DatacenterSimple {
 		return vmTaskMap;
 	}
 
-	public void setApplication(int app) {
-		this.applicationType = app;
+	public void setApplication(Application app) {
+		this.application = app;
 	}
 
-	public int getApplication() {
-		return applicationType;
+	public Application getApplication() {
+		return application;
 	}
 
 	public boolean isOrchestrator() {

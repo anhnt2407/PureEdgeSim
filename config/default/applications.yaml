@@ -1,0 +1,32 @@
+- !!com.mechalikh.pureedgesim.tasksgenerator.Application
+  name: AUGMENTED_REALITY
+  maxDelay: 10  # latency in seconds
+  containerSize: 25000  # application/container size in kilobytes
+  requestSize: 100  # the offloading request that will be sent to the orchestrator and then to the device where the task will be offloaded in kilobytes
+  resultsSize: 100  # the results of the offlaoded task in kilobytes
+  taskLength: 2000  # MI: million instructions
+  requiredCore: 1  # number of CPU cores that are required
+- !!com.mechalikh.pureedgesim.tasksgenerator.Application
+  name: E_HEALTH
+  maxDelay: 5
+  containerSize: 3000
+  requestSize: 100
+  resultsSize: 100
+  taskLength: 200
+  requiredCore: 1
+- !!com.mechalikh.pureedgesim.tasksgenerator.Application
+  name: HEAVY_COMP_APP
+  maxDelay: 200
+  containerSize: 3000
+  requestSize: 2000
+  resultsSize: 1000
+  taskLength: 6000
+  requiredCore: 1
+- !!com.mechalikh.pureedgesim.tasksgenerator.Application
+  name: SMART_HOME
+  maxDelay: 200
+  containerSize: 3000
+  requestSize: 50
+  resultsSize: 50
+  taskLength: 350
+  requiredCore: 1

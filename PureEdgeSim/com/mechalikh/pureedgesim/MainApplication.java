@@ -1,5 +1,6 @@
 package com.mechalikh.pureedgesim;
 
+import java.io.FileNotFoundException;
 import java.lang.reflect.Constructor;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -54,15 +55,18 @@ public class MainApplication {
 
 	public static void launchSimulation(String configPath) {
 		String simConfigfile = configPath + "/simulation_parameters.properties";
-		String applicationsFile = configPath + "/applications.xml";
+		String applicationsFile = configPath + "/applications.yaml";
 		String fogDevicesFile = configPath + "/fog_servers.xml";
 		String edgeDevicesFile = configPath + "/edge_devices.xml";
 		String cloudFile = configPath + "/cloud.xml";
 		SimLog.println("Main- Loading simulation files...");
 
+		simulationParameters.APPLICATIONS = FilesParser.getApplications(applicationsFile);
+
+
 		// Check files
 		FilesParser fp = new FilesParser();
-		if (!fp.checkFiles(simConfigfile, edgeDevicesFile, fogDevicesFile, applicationsFile, cloudFile))
+		if (!fp.checkFiles(simConfigfile, edgeDevicesFile, fogDevicesFile, cloudFile))
 			Runtime.getRuntime().exit(0); // if files aren't correct stop everything.
 
 		// Disable cloudsim plus log

@@ -111,9 +111,7 @@ public class ServersManager {
 							"ServersManager- Wrong percentages values (the sum is superior than 100%), check edge_devices.xml file !");
 					break;
 				}
-
 				datacentersList.add(createDatacenter(edgeElement, simulationParameters.TYPES.EDGE));
-
 			}
 		}
 		if (datacentersList.size() < getSimulationManager().getScenario().getDevicesCount()) // if percentage of
