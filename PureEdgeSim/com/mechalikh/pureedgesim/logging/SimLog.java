@@ -192,7 +192,7 @@ public class SimLog {
 		List<Double> devicesDeathTime = new ArrayList<>();
 		int batteryPoweredDevicesCount = 0;
 		int aliveBatteryPoweredDevicesCount = 0;
-		List<? extends EdgeDataCenter> datacentersList = simulationManager.getServersManager().getDatacenterList();
+		List<? extends EdgeDataCenter> datacentersList = simulationManager.getServersManager().getDatacenters();
 
 		for (EdgeDataCenter dc : datacentersList) {
 			if (dc.getType() == simulationParameters.TYPES.CLOUD) {
@@ -234,21 +234,20 @@ public class SimLog {
 			}
 		}
 		averageCpuUtilization = (averageCloudCpuUtilization + averageEdgeCpuUtilization + averageFogCpuUtilization)
-				/ (edgeDevicesCount + simulationParameters.NUM_OF_FOG_DATACENTERS
-						+ simulationParameters.NUM_OF_CLOUD_DATACENTERS);
+				/ simulationManager.getServersManager().getDatacenters().size();
 		batteryPoweredDevicesCount = aliveBatteryPoweredDevicesCount + deadEdgeDevicesCount;
 		// escape from devision by 0
 		if (aliveBatteryPoweredDevicesCount == 0)
 			aliveBatteryPoweredDevicesCount = 1;
-		averageCloudCpuUtilization = averageCloudCpuUtilization / simulationParameters.NUM_OF_CLOUD_DATACENTERS;
-		averageFogCpuUtilization = averageFogCpuUtilization / simulationParameters.NUM_OF_FOG_DATACENTERS;
+		averageCloudCpuUtilization = averageCloudCpuUtilization / simulationManager.getServersManager().getCloudDatacenters().size();
+		averageFogCpuUtilization = averageFogCpuUtilization / simulationManager.getServersManager().getFogDatacenters().size();
 		averageEdgeCpuUtilization = averageEdgeCpuUtilization / edgeDevicesCount;
 
 		energyConsumption = cloudEnConsumption + fogEnConsumption + edgeEnConsumption;
 		averageRemainingPower = averageRemainingPower / (double) aliveBatteryPoweredDevicesCount;
 		averageRemainingPowerWh = averageRemainingPowerWh / (double) aliveBatteryPoweredDevicesCount;
-		double averageCloudEnConsumption = cloudEnConsumption / simulationParameters.NUM_OF_CLOUD_DATACENTERS;
-		double averageFogEnConsumption = fogEnConsumption / simulationParameters.NUM_OF_FOG_DATACENTERS;
+		double averageCloudEnConsumption = cloudEnConsumption / simulationManager.getServersManager().getCloudDatacenters().size();
+		double averageFogEnConsumption = fogEnConsumption / simulationManager.getServersManager().getFogDatacenters().size();
 		double averageEdgeEnConsumption = edgeEnConsumption / simulationManager.getScenario().getDevicesCount();
 
 		print("SimLog- Average vm CPU utilization                                              :"
@@ -267,11 +266,11 @@ public class SimLog {
 				+ decimalFormat.format(energyConsumption / (double) finishedTasks.size()) + " Wh/task)");
 		print("SimLog- Energy Consumption per level                                            : Cloud="
 				+ padLeftSpaces(decimalFormat.format(cloudEnConsumption), 13) + " Wh (Average: "
-				+ decimalFormat.format(cloudEnConsumption / simulationParameters.NUM_OF_CLOUD_DATACENTERS)
+				+ decimalFormat.format(cloudEnConsumption / simulationManager.getServersManager().getCloudDatacenters().size())
 				+ " Wh/data center)");
 		print("                                                                                  Fog="
 				+ padLeftSpaces(decimalFormat.format(fogEnConsumption), 15) + " Wh (Average: "
-				+ decimalFormat.format(fogEnConsumption / simulationParameters.NUM_OF_FOG_DATACENTERS)
+				+ decimalFormat.format(fogEnConsumption / simulationManager.getServersManager().getFogDatacenters().size())
 				+ " Wh/data center)");
 		print("                                                                                  Edge="
 				+ padLeftSpaces(decimalFormat.format(edgeEnConsumption), 14) + " Wh (Average: "

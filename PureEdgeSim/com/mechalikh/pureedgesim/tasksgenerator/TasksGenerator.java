@@ -13,7 +13,7 @@ public abstract class TasksGenerator {
 	public TasksGenerator(SimulationManager simulationManager) {
 		this.taskList = new ArrayList<>();
 		this.simulationManager = simulationManager;
-		List<EdgeDataCenter> allDcs = this.getSimulationManager().getServersManager().getDatacenterList();
+		List<EdgeDataCenter> allDcs = this.getSimulationManager().getServersManager().getDatacenters();
 		this.edgeDataCenters = allDcs.subList(allDcs.size() - getSimulationManager().getScenario().getDevicesCount(), allDcs.size());
 	}
 

@@ -145,7 +145,7 @@ public class DefaultNetworkModel extends NetworkModel {
 					((EdgeDataCenter) transfer.getTask().getVm().getHost().getDatacenter()), transfer);
 		} else if ("Container".equals(type)) {
 			// registry, so set the first cloud datacenter as the origin
-			calculateEnergyConsumption(simulationManager.getServersManager().getDatacenterList().get(0),
+			calculateEnergyConsumption(simulationManager.getServersManager().getDatacenters().get(0),
 					transfer.getTask().getEdgeDevice(), transfer);
 		} else if ("Result_Orchestrator".equals(type)) {
 			calculateEnergyConsumption(((EdgeDataCenter) transfer.getTask().getVm().getHost().getDatacenter()),

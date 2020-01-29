@@ -23,9 +23,10 @@ import org.cloudbus.cloudsim.vms.VmSimple;
 import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class ServersManager {
-	private List<EdgeDataCenter> datacentersList;
+	private List<EdgeDataCenter> datacenters;
 	private List<EdgeDataCenter> orchestratorsList;
 	private List<Vm> vmList;
 	private SimulationManager simulationManager;
@@ -35,7 +36,7 @@ public class ServersManager {
 	public ServersManager(SimulationManager simulationManager,
 						  Class<? extends Mobility> mobilityManagerClass,
 						  Class<? extends EnergyModel> energyModelClass) {
-		datacentersList = new ArrayList<>();
+		datacenters = new ArrayList<>();
 		orchestratorsList = new ArrayList<>();
 		vmList = new ArrayList<>();
 		this.simulationManager = simulationManager;
@@ -54,7 +55,7 @@ public class ServersManager {
 	}
 
 	private void selectOrchestrators() {
-		for (EdgeDataCenter edgeDataCenter : datacentersList) {
+		for (EdgeDataCenter edgeDataCenter : datacenters) {
 			if ("".equals(simulationParameters.DEPLOY_ORCHESTRATOR)
 					|| ("CLOUD".equals(simulationParameters.DEPLOY_ORCHESTRATOR)
 					&& edgeDataCenter.getType() == simulationParameters.TYPES.CLOUD)) {
@@ -75,7 +76,7 @@ public class ServersManager {
 
 	private void generateDatacenters(ArrayList<DatacenterConfig> cloudConfig) throws Exception {
 		for (DatacenterConfig datacenterConfig : cloudConfig) {
-			datacentersList.add(createDatacenter(datacenterConfig));
+			datacenters.add(createDatacenter(datacenterConfig));
 		}
 	}
 
@@ -86,7 +87,7 @@ public class ServersManager {
 			totalPercentage += instancesPercentage;
 			int devicesInstances = getSimulationManager().getScenario().getDevicesCount() * instancesPercentage / 100;
 			for (int j = 0; j < devicesInstances; j++) {
-				datacentersList.add(createDatacenter(edgeDatacenterConfig));
+				datacenters.add(createDatacenter(edgeDatacenterConfig));
 			}
 		}
 
@@ -180,8 +181,8 @@ public class ServersManager {
 
 	}
 
-	public List<EdgeDataCenter> getDatacenterList() {
-		return datacentersList;
+	public List<EdgeDataCenter> getDatacenters() {
+		return datacenters;
 	}
 
 	public List<EdgeDataCenter> getOrchestratorsList() {
@@ -191,4 +192,21 @@ public class ServersManager {
 	public SimulationManager getSimulationManager() {
 		return simulationManager;
 	}
+
+	public List<EdgeDataCenter> getCloudDatacenters() {
+		return filterDatacentersByType(simulationParameters.TYPES.CLOUD);
+	}
+
+	public List<EdgeDataCenter> getFogDatacenters() {
+		return filterDatacentersByType(simulationParameters.TYPES.FOG);
+	}
+
+	public List<EdgeDataCenter> getEdgeDatacenters() {
+		return filterDatacentersByType(simulationParameters.TYPES.EDGE);
+	}
+
+	private List<EdgeDataCenter> filterDatacentersByType(simulationParameters.TYPES type) {
+		return datacenters.stream().filter(dc -> dc.getType() == type).collect(Collectors.toList());
+	}
+
 }

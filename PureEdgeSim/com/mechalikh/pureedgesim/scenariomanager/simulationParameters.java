@@ -62,8 +62,6 @@ public class simulationParameters {
 
 	public static ArrayList<Application> APPLICATIONS;
 
-	public static int NUM_OF_FOG_DATACENTERS;     // TODO Remove
-	public static int NUM_OF_CLOUD_DATACENTERS;   // TODO Remove
 	public static enum TYPES {                    // TODO Remove
 		CLOUD, FOG, EDGE
 	};

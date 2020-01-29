@@ -67,12 +67,7 @@ public class MainApplication {
 		simulationParameters.APPLICATIONS = FilesParser.getApplications(applicationsFile);
 		ArrayList<DatacenterConfig> datacenterConfigs = FilesParser.getDatacenterConfig(datacentersFile);
 		ArrayList<EdgeDatacenterConfig> edgeDatacenterConfigs = FilesParser.getEdgeDeviceConfig(edgeDevicesFile);
-
-		simulationParameters.NUM_OF_FOG_DATACENTERS = (int) datacenterConfigs.stream()
-				.filter(config -> config.getTag().equals("FOG")).count();
-		simulationParameters.NUM_OF_CLOUD_DATACENTERS = (int) datacenterConfigs.stream()
-				.filter(config -> config.getTag().equals("CLOUD")).count();
-
+		
 		FilesParser.setSimulationProperties(simConfigfile);
 
 		Date startDate = Calendar.getInstance().getTime();

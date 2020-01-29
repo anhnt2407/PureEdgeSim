@@ -113,7 +113,7 @@ public class SimulationVisualizer {
 		double fgUsage = 0;
 		double edgecount = 0;
 		double fogcount = 0;
-		List<? extends EdgeDataCenter> datacenterList = simulationManager.getServersManager().getDatacenterList();
+		List<? extends EdgeDataCenter> datacenterList = simulationManager.getServersManager().getDatacenters();
 		for (EdgeDataCenter edgeDataCenter : datacenterList) {
 			if (edgeDataCenter.getType() == TYPES.CLOUD) {
 				clUsage = edgeDataCenter.getTotalCpuUtilization();
@@ -175,21 +175,16 @@ public class SimulationVisualizer {
 
 		// Browse all devices and create the series
 		// Skip the first items (cloud data centers + fog servers)
-		for (int i = simulationParameters.NUM_OF_FOG_DATACENTERS
-				+ simulationParameters.NUM_OF_CLOUD_DATACENTERS; i < simulationManager.getServersManager()
-						.getDatacenterList().size(); i++) {
-			// If it is an edge device
-			if (simulationManager.getServersManager().getDatacenterList().get(i).getType() == simulationParameters.TYPES.EDGE) {
-				if (simulationManager.getServersManager().getDatacenterList().get(i).isDead()) {
-					x_deadEdgeDevicesList.add(simulationManager.getServersManager().getDatacenterList().get(i).getLocation().getXPos());
-					y_deadEdgeDevicesList.add(simulationManager.getServersManager().getDatacenterList().get(i).getLocation().getYPos());
-				//} else if (simulationManager.getServersManager().getDatacenterList().get(i).isIdle()) {
-				//	x_idleEdgeDevicesList.add(simulationManager.getServersManager().getDatacenterList().get(i).getLocation().getXPos());
-				//	y_idleEdgeDevicesList.add(simulationManager.getServersManager().getDatacenterList().get(i).getLocation().getYPos());
-				} else { // If the device is busy
-					x_activeEdgeDevicesList.add(simulationManager.getServersManager().getDatacenterList().get(i).getLocation().getXPos());
-					y_activeEdgeDevicesList.add(simulationManager.getServersManager().getDatacenterList().get(i).getLocation().getYPos());
-				}
+		for (EdgeDataCenter dc : simulationManager.getServersManager().getEdgeDatacenters()) {
+			if (dc.isDead()) {
+				x_deadEdgeDevicesList.add(dc.getLocation().getXPos());
+				y_deadEdgeDevicesList.add(dc.getLocation().getYPos());
+			//} else if (simulationManager.getServersManager().getDatacenterList().get(i).isIdle()) {
+			//	x_idleEdgeDevicesList.add(dc.getLocation().getXPos());
+			//	y_idleEdgeDevicesList.add(dc.getLocation().getYPos());
+			} else { // If the device is busy
+				x_activeEdgeDevicesList.add(dc.getLocation().getXPos());
+				y_activeEdgeDevicesList.add(dc.getLocation().getYPos());
 			}
 		}
 		//updateSeries(mapChart, "Idle devices", toArray(x_idleEdgeDevicesList), toArray(y_idleEdgeDevicesList),
@@ -213,23 +208,14 @@ public class SimulationVisualizer {
 			List<Double> x_activeFogServersList = new ArrayList<>();
 			List<Double> y_activeFogServersList = new ArrayList<>();
 
-			for (int j = simulationParameters.NUM_OF_CLOUD_DATACENTERS; j < simulationParameters.NUM_OF_FOG_DATACENTERS
-					+ simulationParameters.NUM_OF_CLOUD_DATACENTERS; j++) {
-				// If it is a Fog server
-				if ((simulationManager.getScenario().getOrchArchitecture().contains("FOG")
-						|| simulationManager.getScenario().getOrchArchitecture().equals("ALL"))
-						&& simulationManager.getServersManager().getDatacenterList().get(j)
-								.getType() == simulationParameters.TYPES.FOG
-						&& simulationParameters.NUM_OF_FOG_DATACENTERS != 0) {
-
-					//if (simulationManager.getServersManager().getDatacenterList().get(j).isIdle()) {
-					//	x_idleFogServersList.add(simulationManager.getServersManager().getDatacenterList().get(j).getLocation().getXPos());
-					//	y_idleFogServersList.add(simulationManager.getServersManager().getDatacenterList().get(j).getLocation().getYPos());
-					//} else {
-						x_activeFogServersList.add(simulationManager.getServersManager().getDatacenterList().get(j).getLocation().getXPos());
-						y_activeFogServersList.add(simulationManager.getServersManager().getDatacenterList().get(j).getLocation().getYPos());
-					//}
-				}
+			for (EdgeDataCenter dc : simulationManager.getServersManager().getFogDatacenters()) {
+				//if (simulationManager.getServersManager().getDatacenterList().get(j).isIdle()) {
+				//	x_idleFogServersList.add(dc.getLocation().getXPos());
+				//	y_idleFogServersList.add(dc.getLocation().getYPos());
+				//} else {
+					x_activeFogServersList.add(dc.getLocation().getXPos());
+					y_activeFogServersList.add(dc.getLocation().getYPos());
+				//}
 			}
 
 			//updateSeries(mapChart, "Idle Fog servers", toArray(x_idleFogServersList), toArray(y_idleFogServersList),
@@ -237,7 +223,6 @@ public class SimulationVisualizer {
 
 			updateSeries(mapChart, "Active Fog servers", toArray(x_activeFogServersList),
 					toArray(y_activeFogServersList), SeriesMarkers.CROSS, Color.red);
-
 		}
 	}
 
