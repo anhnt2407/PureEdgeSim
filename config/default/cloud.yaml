@@ -1,0 +1,56 @@
+- !!com.mechalikh.pureedgesim.configs.DatacenterConfig
+  hosts:
+    - core: 32
+      mips: 16000
+      ram: 16000
+      storage: 80000
+      idleConsumption: 0.00008
+      maxConsumption: 0.08
+      vms:
+        - vmm: Xen
+          core: 1
+          mips: 4000
+          ram: 4000
+          storage: 2000
+        - vmm: Xen
+          core: 1
+          mips: 4000
+          ram: 4000
+          storage: 2000
+        - vmm: Xen
+          core: 1
+          mips: 4000
+          ram: 4000
+          storage: 2000
+        - vmm: Xen
+          core: 1
+          mips: 4000
+          ram: 4000
+          storage: 2000
+    - core: 32
+      mips: 16000
+      ram: 16000
+      storage: 80000
+      idleConsumption: 0.00008
+      maxConsumption: 0.08
+      vms:
+        - vmm: Xen
+          core: 1
+          mips: 4000
+          ram: 4000
+          storage: 2000
+        - vmm: Xen
+          core: 1
+          mips: 4000
+          ram: 4000
+          storage: 2000
+        - vmm: Xen
+          core: 1
+          mips: 4000
+          ram: 4000
+          storage: 2000
+        - vmm: Xen
+          core: 1
+          mips: 4000
+          ram: 4000
+          storage: 2000

@@ -6,6 +6,7 @@ import java.util.Properties;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
+import com.mechalikh.pureedgesim.configs.DatacenterConfig;
 import com.mechalikh.pureedgesim.tasksgenerator.Application;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -19,12 +20,11 @@ import org.yaml.snakeyaml.Yaml;
 public class FilesParser {
 
 	// Scan files
-	public boolean checkFiles(String simProp, String edgeFile, String fogFile, String cloudFile) {
+	public boolean checkFiles(String simProp, String edgeFile, String fogFile) {
 		simulationParameters.EDGE_DEVICES_FILE = edgeFile;
 		simulationParameters.FOG_SERVERS_FILE = fogFile;
-		simulationParameters.CLOUD_DATACENTERS_FILE = cloudFile;
 		return (checkSimulationProperties(simProp) && checkXmlFiles(edgeFile, TYPES.EDGE)
-				&& checkXmlFiles(fogFile, TYPES.FOG) && checkXmlFiles(cloudFile, TYPES.CLOUD));
+				&& checkXmlFiles(fogFile, TYPES.FOG));
 	}
 
 	private boolean checkSimulationProperties(String simProp) {
@@ -150,8 +150,6 @@ public class FilesParser {
 					isElementPresent(datacenterElement, "battery");
 					isElementPresent(datacenterElement, "percentage");
 					isElementPresent(datacenterElement, "batterycapacity");
-				} else if (type == TYPES.CLOUD) {
-					simulationParameters.NUM_OF_CLOUD_DATACENTERS++;
 				} else {
 					simulationParameters.NUM_OF_FOG_DATACENTERS++;
 					Element location = (Element) datacenterElement.getElementsByTagName("location").item(0);
@@ -192,15 +190,27 @@ public class FilesParser {
 		return true;
 	}
 
-	public static ArrayList<Application> getApplications(String appFile) {
+	public static ArrayList<DatacenterConfig> getCloudConfig(String appFile) {
+		Yaml yaml = new Yaml();
 		InputStream input = null;
 		try {
 			input = new FileInputStream(new File(appFile));
 		} catch (FileNotFoundException e) {
 			SimLog.println("Error: Could not parse applications file.");
-			e.printStackTrace();
+			System.exit(0);
 		}
+		return yaml.load(input);
+	}
+
+	public static ArrayList<Application> getApplications(String appFile) {
 		Yaml yaml = new Yaml();
+		InputStream input = null;
+		try {
+			input = new FileInputStream(new File(appFile));
+		} catch (FileNotFoundException e) {
+			SimLog.println("Error: Could not parse applications file.");
+			System.exit(0);
+		}
 		return yaml.load(input);
 	}
 

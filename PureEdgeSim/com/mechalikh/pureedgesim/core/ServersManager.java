@@ -9,6 +9,9 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
 import com.mechalikh.pureedgesim.MainApplication;
+import com.mechalikh.pureedgesim.configs.DatacenterConfig;
+import com.mechalikh.pureedgesim.configs.HostConfig;
+import com.mechalikh.pureedgesim.configs.VmConfig;
 import com.mechalikh.pureedgesim.datacenter.EdgeDataCenter;
 import com.mechalikh.pureedgesim.energy.EnergyModel;
 import org.cloudbus.cloudsim.hosts.Host;
@@ -54,8 +57,8 @@ public class ServersManager {
 		this.energyModelClass = energyModelClass;
 	}
 
-	public void generateDatacentersAndDevices() throws Exception {
-		generateCloudDataCenters();
+	public void generateDatacentersAndDevices(ArrayList<DatacenterConfig> cloudConfig) throws Exception {
+		generateCloudDataCenters(cloudConfig);
 		generateFogDataCenters();
 		generateEdgeDev();
 		// Select where the orchestrators are deployed
@@ -114,11 +117,13 @@ public class ServersManager {
 				datacentersList.add(createDatacenter(edgeElement, simulationParameters.TYPES.EDGE));
 			}
 		}
-		if (datacentersList.size() < getSimulationManager().getScenario().getDevicesCount()) // if percentage of
-																								// generated devices is
-																								// < 100%
-			getSimulationManager().getSimulationLogger().print(
-					"ServersManager- Wrong percentages values (the sum is inferior than 100%), check edge_devices.xml file !");
+
+		// if percentage of generated devices is < 100%
+		if (datacentersList.size() < getSimulationManager().getScenario().getDevicesCount()) {
+			getSimulationManager().getSimulationLogger()
+					.print("ServersManager- Wrong percentages values (the sum is inferior than 100%), check edge_devices.xml file !");
+		}
+
 		// Add more devices
 		int missingInstances = getSimulationManager().getScenario().getDevicesCount() - datacentersList.size();
 		for (int k = 0; k < missingInstances; k++) {
@@ -141,18 +146,22 @@ public class ServersManager {
 		}
 	}
 
-	private void generateCloudDataCenters() throws Exception {
-		// Fill the list with cloud datacenters
-		File datacentersFile = new File(simulationParameters.CLOUD_DATACENTERS_FILE);
-		DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
-		DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
-		Document doc = dBuilder.parse(datacentersFile);
-		NodeList datacenterList = doc.getElementsByTagName("datacenter");
-		for (int i = 0; i < datacenterList.getLength(); i++) {
-			Node datacenterNode = datacenterList.item(i);
-			Element datacenterElement = (Element) datacenterNode;
-			datacentersList.add(createDatacenter(datacenterElement, simulationParameters.TYPES.CLOUD));
+	private void generateCloudDataCenters(ArrayList<DatacenterConfig> cloudConfig) throws Exception {
+		for (DatacenterConfig dc : cloudConfig) {
+			datacentersList.add(createDatacenter(dc, simulationParameters.TYPES.CLOUD));
 		}
+	}
+
+	private EdgeDataCenter createDatacenter(DatacenterConfig dc, simulationParameters.TYPES level) throws Exception {
+		List<Host> hostList = createHosts(dc.getHosts(), level);
+		EdgeDataCenter datacenter = new EdgeDataCenter(getSimulationManager(), hostList);
+		datacenter.setOrchestrator(dc.isOrchestrator());
+		datacenter.setType(level);
+		datacenter.setEnergyModel(energyModelClass.getConstructor().newInstance());
+
+		// TODO Migrate FOG and EDGE
+
+		return datacenter;
 	}
 
 	private EdgeDataCenter createDatacenter(Element datacenterElement, simulationParameters.TYPES level) throws Exception {
@@ -185,6 +194,47 @@ public class ServersManager {
 		datacenter.setEnergyModel(energyConstructor.newInstance());
 
 		return datacenter;
+	}
+
+	private List<Host> createHosts(List<HostConfig> hostConfigs, simulationParameters.TYPES type) {
+		List<Host> hosts = new ArrayList<>();
+
+		for (HostConfig hostConfig : hostConfigs) {
+			long bandwidth;
+			if (type == simulationParameters.TYPES.CLOUD) {
+				bandwidth = simulationParameters.WAN_BANDWIDTH / hostConfigs.size();
+			} else {
+				bandwidth = simulationParameters.BANDWIDTH_WLAN / hostConfigs.size();
+			}
+
+			List<Pe> peList = new ArrayList<>();
+			for (int i = 0; i < hostConfig.getCore(); i++) {
+				peList.add(new PeSimple(hostConfig.getMips(), new PeProvisionerSimple()));
+			}
+
+			Host host = new HostSimple(hostConfig.getRam(), bandwidth, hostConfig.getStorage(), peList);
+
+			for (VmConfig vmConfig : hostConfig.getVms()) {
+				CloudletScheduler tasksScheduler;
+				if ("SPACE_SHARED".equals(simulationParameters.CPU_ALLOCATION_POLICY))
+					tasksScheduler = new CloudletSchedulerSpaceShared();
+				else
+					tasksScheduler = new CloudletSchedulerTimeShared();
+				long vmBandwidth = bandwidth / hostConfig.getVms().size();
+				Vm vm = new VmSimple(vmList.size(), vmConfig.getMips(), vmConfig.getCore());
+				vm.setRam(vmConfig.getRam()).setBw(vmBandwidth).setSize(vmConfig.getStorage()).setCloudletScheduler(tasksScheduler);
+				vm.getUtilizationHistory().enable();
+				vm.setHost(host);  // TODO Does it make sense to statically assign VMs to Hosts?
+				vmList.add(vm);
+			}
+			double maxPower = hostConfig.getMaxConsumption();
+			double staticPowerPercent = hostConfig.getIdleConsumption() / maxPower;
+			host.setPowerModel(new PowerModelLinear(maxPower, staticPowerPercent));
+
+			hosts.add(host);
+		}
+
+		return hosts;
 	}
 
 	private List<Host> createHosts(Element datacenterElement, simulationParameters.TYPES type) {

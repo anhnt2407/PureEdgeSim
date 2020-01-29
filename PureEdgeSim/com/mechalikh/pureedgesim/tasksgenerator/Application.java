@@ -10,8 +10,6 @@ public class Application {
     private int taskLength;
     private int requiredCore;
 
-    public Application() {}
-
     public String getName() {
         return name;
     }

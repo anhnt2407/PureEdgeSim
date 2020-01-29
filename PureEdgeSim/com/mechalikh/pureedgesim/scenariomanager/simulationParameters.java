@@ -9,7 +9,6 @@ public class simulationParameters {
 
 	public static String EDGE_DEVICES_FILE="";     // Edge devices xml file path
 	public static String FOG_SERVERS_FILE="";      // Fog servers xml file path
-	public static String CLOUD_DATACENTERS_FILE="";// Cloud datacenters xml file path
 
 	public static boolean PARALLEL = false;       // Enable parallelism
 	public static double SIMULATION_TIME;         // Simulation time (in seconds) 
@@ -29,7 +28,7 @@ public class simulationParameters {
 	
 	// Edge devices, server,datacenters..
 	public static int NUM_OF_FOG_DATACENTERS;     // Number of Fog data centers
-	public static int NUM_OF_CLOUD_DATACENTERS;   // Number of Cloud data centers
+	public static int NUM_OF_CLOUD_DATACENTERS;   // TODO Remove
 	public static int MIN_NUM_OF_EDGE_DEVICES;    // Min number of edge devices
 	public static int MAX_NUM_OF_EDGE_DEVICES;    // Max number of edge devices  
 	public static int EDGE_DEVICE_COUNTER_STEP;   // Edge devices growing rate   
