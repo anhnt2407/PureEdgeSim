@@ -1,0 +1,175 @@
+- !!com.mechalikh.pureedgesim.configs.DatacenterConfig
+  tag: CLOUD
+  hosts:
+    - core: 32
+      mips: 16000
+      ram: 16000
+      storage: 80000
+      idleConsumption: 0.00008
+      maxConsumption: 0.08
+      vms:
+        - vmm: Xen
+          core: 1
+          mips: 4000
+          ram: 4000
+          storage: 2000
+        - vmm: Xen
+          core: 1
+          mips: 4000
+          ram: 4000
+          storage: 2000
+        - vmm: Xen
+          core: 1
+          mips: 4000
+          ram: 4000
+          storage: 2000
+        - vmm: Xen
+          core: 1
+          mips: 4000
+          ram: 4000
+          storage: 2000
+    - core: 32
+      mips: 16000
+      ram: 16000
+      storage: 80000
+      idleConsumption: 0.00008
+      maxConsumption: 0.08
+      vms:
+        - vmm: Xen
+          core: 1
+          mips: 4000
+          ram: 4000
+          storage: 2000
+        - vmm: Xen
+          core: 1
+          mips: 4000
+          ram: 4000
+          storage: 2000
+        - vmm: Xen
+          core: 1
+          mips: 4000
+          ram: 4000
+          storage: 2000
+        - vmm: Xen
+          core: 1
+          mips: 4000
+          ram: 4000
+          storage: 2000
+- !!com.mechalikh.pureedgesim.configs.FogDatacenterConfig
+  tag: FOG
+  locationX: 150
+  locationY: 100
+  hosts:
+    - core: 32
+      mips: 64000
+      ram: 64000
+      storage: 800000
+      idleConsumption: 0.00008
+      maxConsumption: 0.08
+      vms:
+        - vmm: Xen
+          core: 1
+          mips: 4000
+          ram: 4000
+          storage: 20000
+        - vmm: Xen
+          core: 1
+          mips: 4000
+          ram: 4000
+          storage: 20000
+        - vmm: Xen
+          core: 1
+          mips: 4000
+          ram: 4000
+          storage: 20000
+        - vmm: Xen
+          core: 1
+          mips: 4000
+          ram: 4000
+          storage: 20000
+    - core: 32
+      mips: 64000
+      ram: 64000
+      storage: 800000
+      idleConsumption: 0.00008
+      maxConsumption: 0.08
+      vms:
+        - vmm: Xen
+          core: 1
+          mips: 4000
+          ram: 4000
+          storage: 20000
+        - vmm: Xen
+          core: 1
+          mips: 4000
+          ram: 4000
+          storage: 20000
+        - vmm: Xen
+          core: 1
+          mips: 4000
+          ram: 4000
+          storage: 20000
+        - vmm: Xen
+          core: 1
+          mips: 4000
+          ram: 4000
+          storage: 20000
+- !!com.mechalikh.pureedgesim.configs.FogDatacenterConfig
+  tag: FOG
+  locationX: 50
+  locationY: 100
+  hosts:
+    - core: 32
+      mips: 64000
+      ram: 64000
+      storage: 800000
+      idleConsumption: 0.00008
+      maxConsumption: 0.08
+      vms:
+        - vmm: Xen
+          core: 1
+          mips: 4000
+          ram: 4000
+          storage: 20000
+        - vmm: Xen
+          core: 1
+          mips: 4000
+          ram: 4000
+          storage: 20000
+        - vmm: Xen
+          core: 1
+          mips: 4000
+          ram: 4000
+          storage: 20000
+        - vmm: Xen
+          core: 1
+          mips: 4000
+          ram: 4000
+          storage: 20000
+    - core: 32
+      mips: 64000
+      ram: 64000
+      storage: 800000
+      idleConsumption: 0.00008
+      maxConsumption: 0.08
+      vms:
+        - vmm: Xen
+          core: 1
+          mips: 4000
+          ram: 4000
+          storage: 20000
+        - vmm: Xen
+          core: 1
+          mips: 4000
+          ram: 4000
+          storage: 20000
+        - vmm: Xen
+          core: 1
+          mips: 4000
+          ram: 4000
+          storage: 20000
+        - vmm: Xen
+          core: 1
+          mips: 4000
+          ram: 4000
+          storage: 20000

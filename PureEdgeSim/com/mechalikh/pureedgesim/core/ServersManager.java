@@ -10,6 +10,7 @@ import javax.xml.parsers.DocumentBuilderFactory;
 
 import com.mechalikh.pureedgesim.MainApplication;
 import com.mechalikh.pureedgesim.configs.DatacenterConfig;
+import com.mechalikh.pureedgesim.configs.FogDatacenterConfig;
 import com.mechalikh.pureedgesim.configs.HostConfig;
 import com.mechalikh.pureedgesim.configs.VmConfig;
 import com.mechalikh.pureedgesim.datacenter.EdgeDataCenter;
@@ -57,9 +58,8 @@ public class ServersManager {
 		this.energyModelClass = energyModelClass;
 	}
 
-	public void generateDatacentersAndDevices(ArrayList<DatacenterConfig> cloudConfig) throws Exception {
-		generateCloudDataCenters(cloudConfig);
-		generateFogDataCenters();
+	public void generateDatacentersAndDevices(ArrayList<DatacenterConfig> datacenterConfigs) throws Exception {
+		generateDatacenters(datacenterConfigs);
 		generateEdgeDev();
 		// Select where the orchestrators are deployed
 		if (simulationParameters.ENABLE_ORCHESTRATORS)
@@ -132,37 +132,46 @@ public class ServersManager {
 
 	}
 
-	private void generateFogDataCenters() throws Exception {
-		// Fill list with fog data centers
-		File serversFile = new File(simulationParameters.FOG_SERVERS_FILE);
-		DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
-		DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
-		Document doc = dBuilder.parse(serversFile);
-		NodeList datacenterList = doc.getElementsByTagName("datacenter");
-		for (int i = 0; i < datacenterList.getLength(); i++) {
-			Node datacenterNode = datacenterList.item(i);
-			Element datacenterElement = (Element) datacenterNode;
-			datacentersList.add(createDatacenter(datacenterElement, simulationParameters.TYPES.FOG));
+
+	private void generateDatacenters(ArrayList<DatacenterConfig> cloudConfig) throws Exception {
+		for (DatacenterConfig datacenterConfig : cloudConfig) {
+			simulationParameters.TYPES type;
+			if (datacenterConfig.getTag().equals("CLOUD")) {
+				type = simulationParameters.TYPES.CLOUD;
+			} else if (datacenterConfig.getTag().equals("FOG")) {
+				type = simulationParameters.TYPES.FOG;
+			} else {
+				type = simulationParameters.TYPES.EDGE;
+			}
+			List<Host> hostList = createHosts(datacenterConfig.getHosts(), type);
+			EdgeDataCenter datacenter = new EdgeDataCenter(getSimulationManager(), hostList);
+			datacenter.setOrchestrator(datacenterConfig.isOrchestrator());
+			datacenter.setType(type);
+			datacenter.setEnergyModel(energyModelClass.getConstructor().newInstance());
+
+			if (type == simulationParameters.TYPES.FOG || type == simulationParameters.TYPES.EDGE) {
+				int x_position = 0;
+				int y_position = 0;
+				if (type == simulationParameters.TYPES.FOG) {
+					FogDatacenterConfig fogDatacenterConfig = (FogDatacenterConfig) datacenterConfig;
+					x_position = fogDatacenterConfig.getLocationX();
+					y_position = fogDatacenterConfig.getLocationY();
+				} /*else {
+					datacenter.setMobile(Boolean.parseBoolean(datacenterElement.getElementsByTagName("mobility").item(0).getTextContent()));
+					datacenter.setBattery(Boolean.parseBoolean(datacenterElement.getElementsByTagName("battery").item(0).getTextContent()));
+					datacenter.setBatteryCapacity(Double.parseDouble(datacenterElement.getElementsByTagName("batterycapacity").item(0).getTextContent()));
+					x_position = MainApplication.random.nextInt(simulationParameters.AREA_WIDTH);
+					y_position = MainApplication.random.nextInt(simulationParameters.AREA_HEIGHT);
+				}*/
+				Location datacenterLocation = new Location(x_position, y_position);
+				Constructor<? extends Mobility> mobilityConstructor = mobilityManagerClass.getConstructor(Location.class);
+				datacenter.setMobilityManager(mobilityConstructor.newInstance(datacenterLocation));
+			}
+
+			datacentersList.add(datacenter);
 		}
 	}
 
-	private void generateCloudDataCenters(ArrayList<DatacenterConfig> cloudConfig) throws Exception {
-		for (DatacenterConfig dc : cloudConfig) {
-			datacentersList.add(createDatacenter(dc, simulationParameters.TYPES.CLOUD));
-		}
-	}
-
-	private EdgeDataCenter createDatacenter(DatacenterConfig dc, simulationParameters.TYPES level) throws Exception {
-		List<Host> hostList = createHosts(dc.getHosts(), level);
-		EdgeDataCenter datacenter = new EdgeDataCenter(getSimulationManager(), hostList);
-		datacenter.setOrchestrator(dc.isOrchestrator());
-		datacenter.setType(level);
-		datacenter.setEnergyModel(energyModelClass.getConstructor().newInstance());
-
-		// TODO Migrate FOG and EDGE
-
-		return datacenter;
-	}
 
 	private EdgeDataCenter createDatacenter(Element datacenterElement, simulationParameters.TYPES level) throws Exception {
 		List<Host> hostList = createHosts(datacenterElement, level);

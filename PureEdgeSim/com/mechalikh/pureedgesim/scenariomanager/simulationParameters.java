@@ -8,7 +8,6 @@ import java.util.ArrayList;
 public class simulationParameters {
 
 	public static String EDGE_DEVICES_FILE="";     // Edge devices xml file path
-	public static String FOG_SERVERS_FILE="";      // Fog servers xml file path
 
 	public static boolean PARALLEL = false;       // Enable parallelism
 	public static double SIMULATION_TIME;         // Simulation time (in seconds) 

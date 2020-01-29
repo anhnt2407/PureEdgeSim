@@ -3,11 +3,21 @@ package com.mechalikh.pureedgesim.configs;
 import java.util.List;
 
 public class DatacenterConfig {
+
+    private String tag;
     private String arch = "x86";
     private String os = "Linux";
     private String vmm = "Xen";
     private boolean isOrchestrator = false;
     private List<HostConfig> hosts;
+
+    public String getTag() {
+        return tag;
+    }
+
+    public void setTag(String tag) {
+        this.tag = tag;
+    }
 
     public String getArch() {
         return arch;

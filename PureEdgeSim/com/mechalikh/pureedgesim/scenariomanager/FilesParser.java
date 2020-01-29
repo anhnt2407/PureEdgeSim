@@ -20,11 +20,9 @@ import org.yaml.snakeyaml.Yaml;
 public class FilesParser {
 
 	// Scan files
-	public boolean checkFiles(String simProp, String edgeFile, String fogFile) {
+	public boolean checkFiles(String simProp, String edgeFile) {
 		simulationParameters.EDGE_DEVICES_FILE = edgeFile;
-		simulationParameters.FOG_SERVERS_FILE = fogFile;
-		return (checkSimulationProperties(simProp) && checkXmlFiles(edgeFile, TYPES.EDGE)
-				&& checkXmlFiles(fogFile, TYPES.FOG));
+		return (checkSimulationProperties(simProp) && checkXmlFiles(edgeFile, TYPES.EDGE));
 	}
 
 	private boolean checkSimulationProperties(String simProp) {

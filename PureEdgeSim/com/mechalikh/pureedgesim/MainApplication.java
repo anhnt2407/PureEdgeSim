@@ -4,6 +4,7 @@ import java.io.FileNotFoundException;
 import java.lang.reflect.Constructor;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.stream.Collectors;
 
 import com.mechalikh.pureedgesim.configs.DatacenterConfig;
 import com.mechalikh.pureedgesim.logging.ScenarioLog;
@@ -57,19 +58,22 @@ public class MainApplication {
 	public static void launchSimulation(String configPath) {
 		String simConfigfile = configPath + "/simulation_parameters.properties";
 		String applicationsFile = configPath + "/applications.yaml";
-		String fogDevicesFile = configPath + "/fog_servers.xml";
+		String datacentersFile = configPath + "/datacenters.yaml";
 		String edgeDevicesFile = configPath + "/edge_devices.xml";
-		String cloudFile = configPath + "/cloud.yaml";
 		SimLog.println("Main- Loading simulation files...");
 
 		simulationParameters.APPLICATIONS = FilesParser.getApplications(applicationsFile);
-		ArrayList<DatacenterConfig> cloudConfig = FilesParser.getCloudConfig(cloudFile);
+		ArrayList<DatacenterConfig> datacenterConfigs = FilesParser.getCloudConfig(datacentersFile);
 		// TODO tmp
-		simulationParameters.NUM_OF_CLOUD_DATACENTERS = cloudConfig.size();
+
+		simulationParameters.NUM_OF_FOG_DATACENTERS = (int) datacenterConfigs.stream()
+				.filter(config -> config.getTag().equals("FOG")).count();
+		simulationParameters.NUM_OF_CLOUD_DATACENTERS = (int) datacenterConfigs.stream()
+				.filter(config -> config.getTag().equals("CLOUD")).count();
 
 		// Check files
 		FilesParser fp = new FilesParser();
-		if (!fp.checkFiles(simConfigfile, edgeDevicesFile, fogDevicesFile))
+		if (!fp.checkFiles(simConfigfile, edgeDevicesFile))
 			Runtime.getRuntime().exit(0); // if files aren't correct stop everything.
 
 		// Disable cloudsim plus log
@@ -99,7 +103,7 @@ public class MainApplication {
 
 						// Generate all data centers, servers, an devices
 						ServersManager serversManager = new ServersManager(simulationManager, mobilityManagerClass, energyModelClass);
-						serversManager.generateDatacentersAndDevices(cloudConfig);
+						serversManager.generateDatacentersAndDevices(datacenterConfigs);
 						simulationManager.setServersManager(serversManager);
 
 						// Generate tasks list
