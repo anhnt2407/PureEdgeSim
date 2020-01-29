@@ -58,7 +58,7 @@ public class MainApplication {
 		// Disable cloudsim plus log
 		Log.setLevel(Level.OFF);
 
-		String simConfigfile = configPath + "/simulation_parameters.properties";
+		String simConfigfile = configPath + "/simulation.yaml";
 		String applicationsFile = configPath + "/applications.yaml";
 		String datacentersFile = configPath + "/datacenters.yaml";
 		String edgeDevicesFile = configPath + "/edge_devices.yaml";

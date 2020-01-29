@@ -73,18 +73,6 @@ public class SimulationManager extends CloudSimEntity {
 				+ "-  Number of edge devices= " + scenario.getDevicesCount());
 		simulation.start();
 
-		// TODO Reimplement pause (?)
-		/*
-		if (!simulationParameters.PARALLEL) {
-			// Take a few seconds pause to show the results
-			simLog.print(simulationParameters.PAUSE_LENGTH + " seconds pause...");
-			for (int k = 1; k <= simulationParameters.PAUSE_LENGTH; k++) {
-				simLog.printSameLine(".");
-				Thread.sleep(1000);
-			}
-			SimLog.println("");
-		}
-		*/
 		SimLog.println("\nSimulation finished...\n\n###########################################################################");
 	}
 

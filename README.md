@@ -184,7 +184,6 @@ The parameters file contains the following set of parameters:
 |`initialization_time`        |Integer|>= 0         |The time needed to generate all resources, which means that the tasks offloading process starts affter it           |
 |`parallel_simulation`        |Boolean|true or false|Enable or disable parallel simulations                                                                              |
 |`update_interval`            |Double |>= 0.01      |The interval between simulation environment events (in seconds)                                                     |
-|`pause_length`               |Integer|>= 0         |The pause between iterations (in real seconds)                                                                      |  
 |`display_real_time_charts`   |Boolean|true or false|To display or not the simulation results in real time                                                               | 
 |`auto_close_real_time_charts`|Boolean|true or false|Auto close real time charts after the end of iteration                                                              |
 |`charts_update_interval`     |Double |>= 0.01      |Interval of refreshing real time charts (in seconds)                                                                |
@@ -424,8 +423,6 @@ parallel_simulation=false
 
 update_interval=1 
 
-pause_length=5
-
 display_real_time_charts=true
 
 charts_update_interval=1
@@ -436,7 +433,7 @@ network_update_interval=1
 
 ```  
 
-The simulation time (`simulation_time`) in this case is set to 10 minutes. You can increase it or decrease it dependiing on your needs.  The pause length (`pause_length`) is set to 5 seconds. You can set it to 0 if needed (to gain some time between iterations). 
+The simulation time (`simulation_time`) in this case is set to 10 minutes. You can increase it or decrease it dependiing on your needs.
 
 You can also disable the real time charts by setting the `display_real_time_charts` to `false`. Finally, you can set the value of `wait_for_all_tasks` to `false`, which means that the simulation will finish right after its time ends (in this exmaple 10 minutes) and will not wait for the tasks that are being executed to finish. This may affect the simulation results (the tasks being executed will be considered as failed) so be aware.
 

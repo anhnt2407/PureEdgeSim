@@ -2,17 +2,18 @@ package com.mechalikh.pureedgesim.scenariomanager;
 
 import com.mechalikh.pureedgesim.configs.DatacenterConfig;
 import com.mechalikh.pureedgesim.configs.EdgeDatacenterConfig;
+import com.mechalikh.pureedgesim.configs.SimulationConfig;
 import com.mechalikh.pureedgesim.logging.SimLog;
 import com.mechalikh.pureedgesim.tasksgenerator.Application;
 import org.yaml.snakeyaml.Yaml;
+import org.yaml.snakeyaml.constructor.Constructor;
 
 import java.io.*;
 import java.util.ArrayList;
-import java.util.Properties;
 
 public class FilesParser {
 
-	public static void setSimulationProperties(String simProp) {
+	public static void setSimulationProperties(String simConfigFile) {
 		SimLog.println("FilesParser- Checking simulation properties file");
 
 		if (simulationParameters.MIN_NUM_OF_EDGE_DEVICES > simulationParameters.MAX_NUM_OF_EDGE_DEVICES) {
@@ -20,57 +21,56 @@ public class FilesParser {
 			System.exit(0);
 		}
 
-		Properties prop = new Properties();
-		try (InputStream input = new FileInputStream(simProp)) {
-			prop.load(input);
+		Yaml yaml = new Yaml(new Constructor(SimulationConfig.class));
+		try (InputStream input = new FileInputStream(new File(simConfigFile))) {
+			SimulationConfig config = yaml.load(input);
 
-			simulationParameters.PARALLEL = Boolean.parseBoolean(prop.getProperty("parallel_simulation").trim());
-			simulationParameters.SIMULATION_TIME = simulationParameters.INITIALIZATION_TIME + Double.parseDouble(prop.getProperty("simulation_time").trim()); // seconds
-			simulationParameters.PAUSE_LENGTH = Integer.parseInt(prop.getProperty("pause_length").trim());// seconds
-			simulationParameters.UPDATE_INTERVAL = Double.parseDouble(prop.getProperty("update_interval").trim()); // seconds
-			simulationParameters.INITIALIZATION_TIME = Double.parseDouble(prop.getProperty("initialization_time").trim()); // seconds
+			simulationParameters.INITIALIZATION_TIME = config.getInitializationTime(); // seconds
+			simulationParameters.PARALLEL = config.isParallelSimulation();
+			simulationParameters.SIMULATION_TIME = simulationParameters.INITIALIZATION_TIME + config.getSimulationTime(); // seconds
+			simulationParameters.UPDATE_INTERVAL = config.getUpdateInterval(); // seconds
 
-			simulationParameters.DISPLAY_REAL_TIME_CHARTS = Boolean.parseBoolean(prop.getProperty("display_real_time_charts").trim());
-			simulationParameters.AUTO_CLOSE_REAL_TIME_CHARTS = Boolean.parseBoolean(prop.getProperty("auto_close_real_time_charts").trim());
-			simulationParameters.CHARTS_UPDATE_INTERVAL = Double.parseDouble(prop.getProperty("charts_update_interval").trim());
-			simulationParameters.SAVE_CHARTS = Boolean.parseBoolean(prop.getProperty("save_charts").trim());
+			simulationParameters.DISPLAY_REAL_TIME_CHARTS = config.isDisplayRealTimeCharts();
+			simulationParameters.AUTO_CLOSE_REAL_TIME_CHARTS = config.isAutoCloseRealTimeCharts();
+			simulationParameters.CHARTS_UPDATE_INTERVAL = config.getChartsUpdateInterval();
+			simulationParameters.SAVE_CHARTS = config.isSaveCharts();
 
-			simulationParameters.AREA_HEIGHT = Integer.parseInt(prop.getProperty("height").trim()); // meters
-			simulationParameters.AREA_WIDTH = Integer.parseInt(prop.getProperty("width").trim()); // meters
+			simulationParameters.AREA_HEIGHT = config.getHeight(); // meters
+			simulationParameters.AREA_WIDTH = config.getWidth(); // meters
 
 			// Edge devices, server,datacenters..
-			simulationParameters.MIN_NUM_OF_EDGE_DEVICES = Integer.parseInt(prop.getProperty("min_number_of_edge_devices").trim());
-			simulationParameters.MAX_NUM_OF_EDGE_DEVICES = Integer.parseInt(prop.getProperty("max_number_of_edge_devices").trim());
-			simulationParameters.EDGE_DEVICE_COUNTER_STEP = Integer.parseInt(prop.getProperty("edge_device_counter_size").trim());
-			simulationParameters.SPEED = Double.parseDouble(prop.getProperty("speed").trim()); // meters per second m/s
+			simulationParameters.MIN_NUM_OF_EDGE_DEVICES = config.getMinNumberOfEdgeDevices();
+			simulationParameters.MAX_NUM_OF_EDGE_DEVICES = config.getMaxNumberOfEdgeDevices();
+			simulationParameters.EDGE_DEVICE_COUNTER_STEP = config.getEdgeDeviceCounterSize();
+			simulationParameters.SPEED = config.getSpeed(); // meters per second m/s
 
 			// Simulation logger parameters
-			simulationParameters.DEEP_LOGGING = Boolean.parseBoolean(prop.getProperty("deep_log_enabled").trim());
-			simulationParameters.SAVE_LOG = Boolean.parseBoolean(prop.getProperty("save_log_file").trim());
+			simulationParameters.DEEP_LOGGING = config.isDeepLogEnabled();
+			simulationParameters.SAVE_LOG = config.isSaveLogFile();
 
 			// Network parameters
-			simulationParameters.BANDWIDTH_WLAN = 1000 * Integer.parseInt(prop.getProperty("wlan_bandwidth").trim()); // Mbits/s
-			simulationParameters.WAN_BANDWIDTH = 1000 * Integer.parseInt(prop.getProperty("wan_bandwidth").trim());// Mbits/s
-			simulationParameters.EDGE_RANGE = Integer.parseInt(prop.getProperty("edge_range").trim()); // meters
-			simulationParameters.FOG_RANGE = Integer.parseInt(prop.getProperty("fog_coverage").trim()); // meters
-			simulationParameters.NETWORK_UPDATE_INTERVAL = Double.parseDouble(prop.getProperty("network_update_interval").trim()); // seconds
-			simulationParameters.WAN_PROPAGATION_DELAY = Double.parseDouble(prop.getProperty("wan_propogation_delay").trim()); // seconds
+			simulationParameters.BANDWIDTH_WLAN = 1000 * config.getWlanBandwidth(); // Mbits/s
+			simulationParameters.WAN_BANDWIDTH = 1000 * config.getWanBandwidth();// Mbits/s
+			simulationParameters.EDGE_RANGE = config.getEdgeRange(); // meters
+			simulationParameters.FOG_RANGE = config.getFogCoverage(); // meters
+			simulationParameters.NETWORK_UPDATE_INTERVAL = config.getNetworkUpdateInterval(); // seconds
+			simulationParameters.WAN_PROPAGATION_DELAY = config.getWanPropogationDelay(); // seconds
 
 			// Energy model parameters
-			simulationParameters.AMPLIFIER_DISSIPATION_FREE_SPACE = Double.parseDouble(prop.getProperty("amplifier_dissipation_free_space").trim()); // J/bit/m^2
-			simulationParameters.AMPLIFIER_DISSIPATION_MULTIPATH = Double.parseDouble(prop.getProperty("amplifier_dissipation_multipath").trim()); // J/bit/m^4
-			simulationParameters.CONSUMED_ENERGY_PER_BIT = Double.parseDouble(prop.getProperty("consumed_energy_per_bit").trim()); // J/bit
+			simulationParameters.AMPLIFIER_DISSIPATION_FREE_SPACE = config.getAmplifierDissipationFreeSpace(); // J/bit/m^2
+			simulationParameters.AMPLIFIER_DISSIPATION_MULTIPATH = config.getAmplifierDissipationMultipath(); // J/bit/m^4
+			simulationParameters.CONSUMED_ENERGY_PER_BIT = config.getConsumedEnergyPerBit(); // J/bit
 
 			// Tasks orchestration parameters
-			simulationParameters.ENABLE_ORCHESTRATORS = Boolean.parseBoolean(prop.getProperty("enable_orchestrators").trim());
-			simulationParameters.TASKS_PER_EDGE_DEVICE_PER_MINUTES = Integer.parseInt(prop.getProperty("tasks_generation_rate").trim());
-			simulationParameters.ORCHESTRATION_ALGORITHMS = prop.getProperty("orchestration_algorithms").split(",");
-			simulationParameters.ORCHESTRATION_ARCHITECTURES = prop.getProperty("orchestration_architectures").split(",");
-			simulationParameters.ENABLE_REGISTRY = Boolean.parseBoolean(prop.getProperty("enable_registry").trim());
-			simulationParameters.REGISTRY_MODE = prop.getProperty("registry_mode").trim();
-			simulationParameters.CPU_ALLOCATION_POLICY = prop.getProperty("Applications_CPU_allocation_policy").trim();
-			simulationParameters.DEPLOY_ORCHESTRATOR = prop.getProperty("deploy_orchestrator").trim();
-			simulationParameters.WAIT_FOR_TASKS = Boolean.parseBoolean(prop.getProperty("wait_for_all_tasks").trim());
+			simulationParameters.ENABLE_ORCHESTRATORS = config.isEnableOrchestrators();
+			simulationParameters.TASKS_PER_EDGE_DEVICE_PER_MINUTES = config.getTasksGenerationRate();
+			simulationParameters.ORCHESTRATION_ALGORITHMS = config.getOrchestrationAlgorithms().split(",");
+			simulationParameters.ORCHESTRATION_ARCHITECTURES = config.getOrchestrationArchitectures().split(",");
+			simulationParameters.ENABLE_REGISTRY = config.isEnableRegistry();
+			simulationParameters.REGISTRY_MODE = config.getRegistryMode();
+			simulationParameters.CPU_ALLOCATION_POLICY = config.getApplicationCpuAllocationPolicy();
+			simulationParameters.DEPLOY_ORCHESTRATOR = config.getDeployOrchestrator();
+			simulationParameters.WAIT_FOR_TASKS = config.isWaitForAllTasks();
 		} catch (IOException e) {
 			e.printStackTrace();
 			System.exit(0);
@@ -91,14 +91,12 @@ public class FilesParser {
 
 	public static ArrayList<EdgeDatacenterConfig> getEdgeDeviceConfig(String appFile) {
 		Yaml yaml = new Yaml();
-		InputStream input = null;
-		try {
-			input = new FileInputStream(new File(appFile));
-		} catch (FileNotFoundException e) {
+		try (InputStream input = new FileInputStream(new File(appFile))) {
+			return yaml.load(input);
+		} catch (IOException e) {
 			SimLog.println("Error: Could not parse edge device file.");
-			System.exit(0);
+			return new ArrayList<>();
 		}
-		return yaml.load(input);
 	}
 
 	public static ArrayList<Application> getApplications(String appFile) {

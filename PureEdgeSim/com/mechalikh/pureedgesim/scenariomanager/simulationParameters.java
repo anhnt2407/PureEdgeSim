@@ -9,7 +9,6 @@ public class simulationParameters {
 
 	public static boolean PARALLEL = false;       // Enable parallelism
 	public static double SIMULATION_TIME;         // Simulation time (in seconds) 
-	public static int PAUSE_LENGTH;               // Pause between scenarios (in seconds)
 	public static double UPDATE_INTERVAL;         // Event interval (vm utilization update, mobility update...) (in seconds) 
 	public static double INITIALIZATION_TIME;     // Time required to generate the different resources (in seconds)
 	
@@ -60,7 +59,7 @@ public class simulationParameters {
                                                          // this variable will allow the user to wait for the execution of all tasks or to 
                                                          // end the simulation when the predifined time ends.
 
-	public static ArrayList<Application> APPLICATIONS;
+	public static ArrayList<Application> APPLICATIONS;  // TODO Remove
 
 	public static enum TYPES {                    // TODO Remove
 		CLOUD, FOG, EDGE
