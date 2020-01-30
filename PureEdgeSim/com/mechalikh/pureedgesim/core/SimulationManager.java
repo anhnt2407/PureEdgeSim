@@ -25,7 +25,6 @@ public class SimulationManager extends CloudSimEntity {
 	private List<Task> tasksList;
 	private Orchestrator edgeOrchestrator;
 	private ServersManager serversManager;
-	private SimulationVisualizer simulationVisualizer;
 	private CloudSim simulation;
 	private int simulationId;
 	private int iteration;
@@ -50,21 +49,6 @@ public class SimulationManager extends CloudSimEntity {
 		broker = createBroker();
 
 		simLog.initialize(this, scenario.getDevicesCount(), scenario.getOrchAlgorithm(), scenario.getOrchArchitecture());
-
-		// Show real time results during the simulation
-		if (simulationParameters.DISPLAY_REAL_TIME_CHARTS && !simulationParameters.PARALLEL)
-			simulationVisualizer = new SimulationVisualizer(this);
-	}
-
-	// Start simulation
-	public void startSimulation() {
-		simLog.print("SimulationManager"
-				+ "-  Orchestration algorithm= " + scenario.getOrchAlgorithm()
-				+ "-  Architechitecture= " + scenario.getOrchArchitecture()
-				+ "-  Number of edge devices= " + scenario.getDevicesCount());
-		simulation.start();
-
-		SimLog.println("\nSimulation finished...\n\n###########################################################################");
 	}
 
 	@Override

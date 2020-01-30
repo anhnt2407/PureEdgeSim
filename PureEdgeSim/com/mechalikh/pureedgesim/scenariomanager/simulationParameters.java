@@ -11,12 +11,6 @@ public class simulationParameters {
 	public static double SIMULATION_TIME;         // Simulation time (in seconds) 
 	public static double UPDATE_INTERVAL;         // Event interval (vm utilization update, mobility update...) (in seconds) 
 	public static double INITIALIZATION_TIME;     // Time required to generate the different resources (in seconds)
-	
-	// Charts settings
-	public static boolean DISPLAY_REAL_TIME_CHARTS;   // Show real time charts
-	public static boolean AUTO_CLOSE_REAL_TIME_CHARTS;// Close real time charts when simlation finishes 
-	public static double CHARTS_UPDATE_INTERVAL;	  // Charts refresh interval in seconds
-	public static boolean SAVE_CHARTS;                // Save charts to bitmap format (*.png files)  
 
 	// Simulation area
 	public static int AREA_HEIGHT;

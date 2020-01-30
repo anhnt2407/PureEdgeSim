@@ -30,9 +30,13 @@ import com.mechalikh.pureedgesim.datacenter.EdgeDataCenter;
 import com.mechalikh.pureedgesim.scenariomanager.simulationParameters;
 import com.mechalikh.pureedgesim.scenariomanager.simulationParameters.TYPES;
 
-import static com.mechalikh.pureedgesim.core.Events.UPDATE_REAL_TIME_CHARTS;
-
 public class SimulationVisualizer extends CloudSimEntity {
+
+	private SimulationManager simulationManager;
+	private boolean closeRealTimeCharts = false;
+	private boolean saveCharts = false;
+	private float updateInterval;
+
 	JFrame simulationResultsFrame;
 	private SwingWrapper<XYChart> swingWrapper;
 	private XYChart mapChart = new XYChartBuilder().height(270).width(450).theme(ChartTheme.Matlab)
@@ -49,28 +53,26 @@ public class SimulationVisualizer extends CloudSimEntity {
 	private List<Double> wanUsage = new ArrayList<>();
 	private List<Double> currentTime = new ArrayList<>();
 	private List<Double> tasksFailedList = new ArrayList<>();
-	private List<XYChart> charts = new ArrayList<XYChart>();
-	private SimulationManager simulationManager;
+	private List<XYChart> charts = new ArrayList<>();
 	private int clock = -1;
 	private boolean firstTime = true;
 
-	public SimulationVisualizer(SimulationManager simulationManager) {
+	public SimulationVisualizer(SimulationManager simulationManager, float updateInterval) {
 		super(simulationManager.getSimulation());
 		this.simulationManager = simulationManager;
+		this.updateInterval = updateInterval;
 	}
 
 	@Override
 	protected void startEntity() {
-		// Updating real time charts
-		if (simulationParameters.DISPLAY_REAL_TIME_CHARTS && !simulationParameters.PARALLEL)
-			schedule(this, simulationParameters.INITIALIZATION_TIME, UPDATE_REAL_TIME_CHARTS);
+		schedule(this, simulationParameters.INITIALIZATION_TIME, Events.UPDATE_REAL_TIME_CHARTS);
 	}
 
 	@Override
 	public void processEvent(SimEvent evt) {
 		if (evt.getTag() == Events.UPDATE_REAL_TIME_CHARTS) {
 			updateCharts();
-			schedule(this, simulationParameters.UPDATE_INTERVAL, Events.UPDATE_REAL_TIME_CHARTS);
+			schedule(this, updateInterval, Events.UPDATE_REAL_TIME_CHARTS);
 		} else {
 			SimLog.println("Error: Unknown event " + evt);
 			System.exit(0);
@@ -79,21 +81,11 @@ public class SimulationVisualizer extends CloudSimEntity {
 
 	@Override
 	public void shutdownEntity() {
-		if (simulationParameters.DISPLAY_REAL_TIME_CHARTS && !simulationParameters.PARALLEL) {
-			// Close real time charts after the end of the simulation
-			if (simulationParameters.AUTO_CLOSE_REAL_TIME_CHARTS)
-				close();
-			try {
-				// Save those charts in bitmap and vector formats
-				if (simulationParameters.SAVE_CHARTS)
-					saveCharts();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-		}
+		if (closeRealTimeCharts) simulationResultsFrame.dispose();
+		if (saveCharts) saveCharts();
 	}
 
-	public void updateCharts() {
+	private void updateCharts() {
 		if (firstTime) {
 			initCharts();
 			charts.add(mapChart);
@@ -127,7 +119,7 @@ public class SimulationVisualizer extends CloudSimEntity {
 				simulationParameters.WAN_BANDWIDTH / 1000.0 });
 	}
 
-	void mapChart() {
+	private void mapChart() {
 		// Add edge devices to map
 		addEdgeDevicesToMap();
 		// Add Fog servers to the map
@@ -147,7 +139,7 @@ public class SimulationVisualizer extends CloudSimEntity {
 		}
 	}
 
-	void utilizationChart() {
+	private void utilizationChart() {
 		double clUsage = 0;
 		double edUsage = 0;
 		double fgUsage = 0;
@@ -183,7 +175,7 @@ public class SimulationVisualizer extends CloudSimEntity {
 
 	}
 
-	void networkUtilizationChart() {
+	private void networkUtilizationChart() {
 		double wan = simulationManager.getNetworkModel().getWanUtilization();
 
 		wanUsage.add(wan);
@@ -316,19 +308,27 @@ public class SimulationVisualizer extends CloudSimEntity {
 
 	}
 
-	public void close() {
-		simulationResultsFrame.dispose();
-	}
-
-	public void saveCharts() throws IOException {
+	private void saveCharts() {
 		String folderName = MainApplication.getOutputFolder() + "/"
 				+ simulationManager.getSimulationLogger().getSimStartTime() + "/simulation_"
 				+ simulationManager.getSimulationId() + "/iteration_" + simulationManager.getIterationId() + "__"
 				+ simulationManager.getScenario().toString();
 		new File(folderName).mkdirs();
-		BitmapEncoder.saveBitmapWithDPI(mapChart, folderName + "/map_chart", BitmapFormat.PNG, 600);
-		BitmapEncoder.saveBitmapWithDPI(networkUtilizationChart, folderName + "/network_usage", BitmapFormat.PNG, 600);
-		BitmapEncoder.saveBitmapWithDPI(cpuUtilizationChart, folderName + "/cpu_usage", BitmapFormat.PNG, 600);
-		BitmapEncoder.saveBitmapWithDPI(tasksSuccessChart, folderName + "/tasks_success_rate", BitmapFormat.PNG, 600);
+		try {
+			BitmapEncoder.saveBitmapWithDPI(mapChart, folderName + "/map_chart", BitmapFormat.PNG, 600);
+			BitmapEncoder.saveBitmapWithDPI(networkUtilizationChart, folderName + "/network_usage", BitmapFormat.PNG, 600);
+			BitmapEncoder.saveBitmapWithDPI(cpuUtilizationChart, folderName + "/cpu_usage", BitmapFormat.PNG, 600);
+			BitmapEncoder.saveBitmapWithDPI(tasksSuccessChart, folderName + "/tasks_success_rate", BitmapFormat.PNG, 600);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
+	public void setCloseRealTimeCharts(boolean closeRealTimeCharts) {
+		this.closeRealTimeCharts = closeRealTimeCharts;
+	}
+
+	public void setSaveCharts(boolean saveCharts) {
+		this.saveCharts = saveCharts;
 	}
 }

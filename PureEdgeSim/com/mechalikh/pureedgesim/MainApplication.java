@@ -9,7 +9,9 @@ import com.mechalikh.pureedgesim.configs.DatacenterConfig;
 import com.mechalikh.pureedgesim.configs.EdgeDatacenterConfig;
 import com.mechalikh.pureedgesim.configs.SimulationConfig;
 import com.mechalikh.pureedgesim.logging.ScenarioLog;
+import com.mechalikh.pureedgesim.logging.SimulationVisualizer;
 import org.cloudbus.cloudsim.core.CloudSim;
+import org.cloudbus.cloudsim.core.Simulation;
 import org.cloudsimplus.util.Log;
 import com.mechalikh.pureedgesim.energy.EnergyModel;
 import com.mechalikh.pureedgesim.core.ServersManager;
@@ -85,11 +87,6 @@ public class MainApplication {
 		simulationParameters.SIMULATION_TIME = simulationParameters.INITIALIZATION_TIME + config.getSimulationTime(); // seconds
 		simulationParameters.UPDATE_INTERVAL = config.getUpdateInterval(); // seconds
 
-		simulationParameters.DISPLAY_REAL_TIME_CHARTS = config.isDisplayRealTimeCharts();
-		simulationParameters.AUTO_CLOSE_REAL_TIME_CHARTS = config.isAutoCloseRealTimeCharts();
-		simulationParameters.CHARTS_UPDATE_INTERVAL = config.getChartsUpdateInterval();
-		simulationParameters.SAVE_CHARTS = config.isSaveCharts();
-
 		simulationParameters.AREA_HEIGHT = config.getHeight(); // meters
 		simulationParameters.AREA_WIDTH = config.getWidth(); // meters
 
@@ -130,7 +127,7 @@ public class MainApplication {
 		Date startDate = Calendar.getInstance().getTime();
 
 		String startTime = new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss").format(new Date());
-		List<SimulationManager> simulationManagers = new ArrayList<>();
+		List<Simulation> simulations = new ArrayList<>();
 
 		int simulationId = 0;
 		int iteration = 0;
@@ -145,9 +142,14 @@ public class MainApplication {
 
 						CloudSim simulation = new CloudSim();
 						SimLog simLog = new SimLog(startTime, scenarioLog);
-
 						SimulationManager simulationManager = new SimulationManager(simLog, simulation, simulationId, iteration, scenarios.get(simulationId));
-						simulationManagers.add(simulationManager);
+
+						// Show real time charts during the simulation
+						if (config.isDisplayRealTimeCharts() && !simulationParameters.PARALLEL) {
+							SimulationVisualizer visualizer = new SimulationVisualizer(simulationManager, config.getChartsUpdateInterval());
+							visualizer.setSaveCharts(config.isSaveCharts());
+							visualizer.setCloseRealTimeCharts(config.isAutoCloseRealTimeCharts());
+						}
 
 						// Generate all data centers, servers, an devices
 						ServersManager serversManager = new ServersManager(simulationManager, mobilityManagerClass, energyModelClass);
@@ -169,6 +171,8 @@ public class MainApplication {
 						Constructor<?> networkConstructor = networkModelClass.getConstructor(SimulationManager.class);
 						NetworkModel networkModel = (NetworkModel) networkConstructor.newInstance(simulationManager);
 						simulationManager.setNetworkModel(networkModel);
+
+						simulations.add(simulation);
 					} catch (Exception e) {
 						e.printStackTrace();
 						SimLog.println("Main- The simulation has been terminated due to an unexpected error");
@@ -181,9 +185,9 @@ public class MainApplication {
 
 		try {
 			if (simulationParameters.PARALLEL) {
-				simulationManagers.parallelStream().forEach(SimulationManager::startSimulation);
+				simulations.parallelStream().forEach(Simulation::start);
 			} else {
-				simulationManagers.forEach(SimulationManager::startSimulation);
+				simulations.forEach(Simulation::start);
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -193,7 +197,7 @@ public class MainApplication {
 		SimLog.println("Main- Simulation Finished!");
 
 		// Generate and save charts
-		if (simulationParameters.SAVE_CHARTS && !simulationParameters.PARALLEL) {
+		if (config.isSaveCharts() && !simulationParameters.PARALLEL) {
 			SimLog.println("Main- Saving charts...");
 			ChartsGenerator chartsGenerator = new ChartsGenerator(SimLog.getFileName(".csv", startTime, scenarios.size() - 1));
 			chartsGenerator.generate();
