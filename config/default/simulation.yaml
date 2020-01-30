@@ -1,5 +1,5 @@
 # simulation time in seconds
-simulationTime: 6000
+simulationTime: 1000
 # initialization time (in seconds) : the time needed to generate all the resources, before starting the simulation
 initializationTime: 60
 parallelSimulation: false

@@ -1,11 +1,14 @@
 package com.mechalikh.pureedgesim;
 
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
 import com.mechalikh.pureedgesim.configs.DatacenterConfig;
 import com.mechalikh.pureedgesim.configs.EdgeDatacenterConfig;
+import com.mechalikh.pureedgesim.configs.SimulationConfig;
 import com.mechalikh.pureedgesim.logging.ScenarioLog;
 import org.cloudbus.cloudsim.core.CloudSim;
 import org.cloudsimplus.util.Log;
@@ -64,11 +67,66 @@ public class MainApplication {
 		String edgeDevicesFile = configPath + "/edge_devices.yaml";
 		SimLog.println("Main- Loading simulation files...");
 
-		simulationParameters.APPLICATIONS = FilesParser.getApplications(applicationsFile);
-		ArrayList<DatacenterConfig> datacenterConfigs = FilesParser.getDatacenterConfig(datacentersFile);
-		ArrayList<EdgeDatacenterConfig> edgeDatacenterConfigs = FilesParser.getEdgeDeviceConfig(edgeDevicesFile);
-		
-		FilesParser.setSimulationProperties(simConfigfile);
+		SimulationConfig config = null;
+		ArrayList<DatacenterConfig> datacenterConfigs = null;
+		ArrayList<EdgeDatacenterConfig> edgeDatacenterConfigs = null;
+		try {
+			config = FilesParser.getSimulationConfig(simConfigfile);
+			simulationParameters.APPLICATIONS = FilesParser.getApplications(applicationsFile);
+			datacenterConfigs = FilesParser.getDatacenterConfig(datacentersFile);
+			edgeDatacenterConfigs = FilesParser.getEdgeDeviceConfig(edgeDevicesFile);
+		} catch (FileNotFoundException e) {
+			SimLog.println("Could not read configuration file");
+			e.printStackTrace();
+			System.exit(0);
+		}
+
+		simulationParameters.INITIALIZATION_TIME = config.getInitializationTime(); // seconds
+		simulationParameters.PARALLEL = config.isParallelSimulation();
+		simulationParameters.SIMULATION_TIME = simulationParameters.INITIALIZATION_TIME + config.getSimulationTime(); // seconds
+		simulationParameters.UPDATE_INTERVAL = config.getUpdateInterval(); // seconds
+
+		simulationParameters.DISPLAY_REAL_TIME_CHARTS = config.isDisplayRealTimeCharts();
+		simulationParameters.AUTO_CLOSE_REAL_TIME_CHARTS = config.isAutoCloseRealTimeCharts();
+		simulationParameters.CHARTS_UPDATE_INTERVAL = config.getChartsUpdateInterval();
+		simulationParameters.SAVE_CHARTS = config.isSaveCharts();
+
+		simulationParameters.AREA_HEIGHT = config.getHeight(); // meters
+		simulationParameters.AREA_WIDTH = config.getWidth(); // meters
+
+		// Edge devices, server,datacenters..
+		simulationParameters.MIN_NUM_OF_EDGE_DEVICES = config.getMinNumberOfEdgeDevices();
+		simulationParameters.MAX_NUM_OF_EDGE_DEVICES = config.getMaxNumberOfEdgeDevices();
+		simulationParameters.EDGE_DEVICE_COUNTER_STEP = config.getEdgeDeviceCounterSize();
+		simulationParameters.SPEED = config.getSpeed(); // meters per second m/s
+
+		// Simulation logger parameters
+		simulationParameters.DEEP_LOGGING = config.isDeepLogEnabled();
+		simulationParameters.SAVE_LOG = config.isSaveLogFile();
+
+		// Network parameters
+		simulationParameters.BANDWIDTH_WLAN = 1000 * config.getWlanBandwidth(); // Mbits/s
+		simulationParameters.WAN_BANDWIDTH = 1000 * config.getWanBandwidth();// Mbits/s
+		simulationParameters.EDGE_RANGE = config.getEdgeRange(); // meters
+		simulationParameters.FOG_RANGE = config.getFogCoverage(); // meters
+		simulationParameters.NETWORK_UPDATE_INTERVAL = config.getNetworkUpdateInterval(); // seconds
+		simulationParameters.WAN_PROPAGATION_DELAY = config.getWanPropogationDelay(); // seconds
+
+		// Energy model parameters
+		simulationParameters.AMPLIFIER_DISSIPATION_FREE_SPACE = config.getAmplifierDissipationFreeSpace(); // J/bit/m^2
+		simulationParameters.AMPLIFIER_DISSIPATION_MULTIPATH = config.getAmplifierDissipationMultipath(); // J/bit/m^4
+		simulationParameters.CONSUMED_ENERGY_PER_BIT = config.getConsumedEnergyPerBit(); // J/bit
+
+		// Tasks orchestration parameters
+		simulationParameters.ENABLE_ORCHESTRATORS = config.isEnableOrchestrators();
+		simulationParameters.TASKS_PER_EDGE_DEVICE_PER_MINUTES = config.getTasksGenerationRate();
+		simulationParameters.ORCHESTRATION_ALGORITHMS = config.getOrchestrationAlgorithms().split(",");
+		simulationParameters.ORCHESTRATION_ARCHITECTURES = config.getOrchestrationArchitectures().split(",");
+		simulationParameters.ENABLE_REGISTRY = config.isEnableRegistry();
+		simulationParameters.REGISTRY_MODE = config.getRegistryMode();
+		simulationParameters.CPU_ALLOCATION_POLICY = config.getApplicationCpuAllocationPolicy();
+		simulationParameters.DEPLOY_ORCHESTRATOR = config.getDeployOrchestrator();
+		simulationParameters.WAIT_FOR_TASKS = config.isWaitForAllTasks();
 
 		Date startDate = Calendar.getInstance().getTime();
 
