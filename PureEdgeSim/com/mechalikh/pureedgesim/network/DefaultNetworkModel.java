@@ -1,6 +1,8 @@
 package com.mechalikh.pureedgesim.network;
 
 import java.util.List;
+
+import com.mechalikh.pureedgesim.core.Events;
 import org.cloudbus.cloudsim.core.events.SimEvent;
 import com.mechalikh.pureedgesim.datacenter.EdgeDataCenter;
 import com.mechalikh.pureedgesim.energy.DefaultEnergyModel;
@@ -81,7 +83,7 @@ public class DefaultNetworkModel extends NetworkModel {
 					.add(new FileTransferProgress(task, task.getFileSize() * 8, FileTransferProgress.Type.REQUEST));
 		else // The device orchestrate its tasks by itself, so, send the request directly to
 				// destination
-			scheduleNow(simulationManager, SimulationManager.SEND_TASK_FROM_ORCH_TO_DESTINATION, task);
+			scheduleNow(simulationManager, Events.SEND_TASK_FROM_ORCH_TO_DESTINATION, task);
 	}
 
 	protected void updateTasksProgress() {
@@ -205,11 +207,11 @@ public class DefaultNetworkModel extends NetworkModel {
 	}
 
 	protected void containerDownloadFinished(FileTransferProgress transfer) {
-		scheduleNow(simulationManager, SimulationManager.EXECUTE_TASK, transfer.getTask());
+		scheduleNow(simulationManager, Events.EXECUTE_TASK, transfer.getTask());
 	}
 
 	protected void resultsReturnedToDevice(FileTransferProgress transfer) {
-		scheduleNow(simulationManager, SimulationManager.RESULT_RETURN_FINISHED, transfer.getTask());
+		scheduleNow(simulationManager, Events.RESULT_RETURN_FINISHED, transfer.getTask());
 	}
 
 	protected void returnResultToDevice(FileTransferProgress transfer) {
@@ -233,10 +235,10 @@ public class DefaultNetworkModel extends NetworkModel {
 		} else {// if the registry is disabled, execute directly the request, as it represents
 				// the offloaded task in this case
 			if (((EdgeDataCenter) transfer.getTask().getVm().getHost().getDatacenter()).getType().equals(TYPES.CLOUD))
-				schedule(simulationManager, simulationParameters.WAN_PROPAGATION_DELAY, SimulationManager.EXECUTE_TASK,
+				schedule(simulationManager, simulationParameters.WAN_PROPAGATION_DELAY, Events.EXECUTE_TASK,
 						transfer.getTask());
 			else
-				scheduleNow(simulationManager, SimulationManager.EXECUTE_TASK, transfer.getTask());
+				scheduleNow(simulationManager, Events.EXECUTE_TASK, transfer.getTask());
 		}
 	}
 
@@ -244,9 +246,9 @@ public class DefaultNetworkModel extends NetworkModel {
 		// Find the offloading destination and execute the task
 		if (transfer.getTask().getOrchestrator().getType().equals(TYPES.CLOUD))
 			schedule(simulationManager, simulationParameters.WAN_PROPAGATION_DELAY,
-					SimulationManager.SEND_TASK_FROM_ORCH_TO_DESTINATION, transfer.getTask());
+					Events.SEND_TASK_FROM_ORCH_TO_DESTINATION, transfer.getTask());
 		else
-			scheduleNow(simulationManager, SimulationManager.SEND_TASK_FROM_ORCH_TO_DESTINATION, transfer.getTask());
+			scheduleNow(simulationManager, Events.SEND_TASK_FROM_ORCH_TO_DESTINATION, transfer.getTask());
 	}
 
 	@Override

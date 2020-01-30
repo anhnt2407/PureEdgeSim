@@ -9,7 +9,7 @@ updateInterval: 1
 # display real time charts
 displayRealTimeCharts: true
 # close charts when simulation ends 
-autoCloseRealTimeCharts: false
+autoCloseRealTimeCharts: true
 # real time charts refresh interval
 chartsUpdateInterval: 1
 # save charts as bitmap files

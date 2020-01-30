@@ -9,7 +9,10 @@ import java.util.List;
 import javax.swing.JFrame;
 import javax.swing.WindowConstants;
 
+import com.mechalikh.pureedgesim.core.Events;
 import com.mechalikh.pureedgesim.core.SimulationManager;
+import org.cloudbus.cloudsim.core.CloudSimEntity;
+import org.cloudbus.cloudsim.core.events.SimEvent;
 import org.knowm.xchart.BitmapEncoder;
 import org.knowm.xchart.BitmapEncoder.BitmapFormat;
 import org.knowm.xchart.SwingWrapper;
@@ -27,7 +30,9 @@ import com.mechalikh.pureedgesim.datacenter.EdgeDataCenter;
 import com.mechalikh.pureedgesim.scenariomanager.simulationParameters;
 import com.mechalikh.pureedgesim.scenariomanager.simulationParameters.TYPES;
 
-public class SimulationVisualizer {
+import static com.mechalikh.pureedgesim.core.Events.UPDATE_REAL_TIME_CHARTS;
+
+public class SimulationVisualizer extends CloudSimEntity {
 	JFrame simulationResultsFrame;
 	private SwingWrapper<XYChart> swingWrapper;
 	private XYChart mapChart = new XYChartBuilder().height(270).width(450).theme(ChartTheme.Matlab)
@@ -50,7 +55,42 @@ public class SimulationVisualizer {
 	private boolean firstTime = true;
 
 	public SimulationVisualizer(SimulationManager simulationManager) {
+		super(simulationManager.getSimulation());
 		this.simulationManager = simulationManager;
+	}
+
+	@Override
+	protected void startEntity() {
+		// Updating real time charts
+		if (simulationParameters.DISPLAY_REAL_TIME_CHARTS && !simulationParameters.PARALLEL)
+			schedule(this, simulationParameters.INITIALIZATION_TIME, UPDATE_REAL_TIME_CHARTS);
+	}
+
+	@Override
+	public void processEvent(SimEvent evt) {
+		if (evt.getTag() == Events.UPDATE_REAL_TIME_CHARTS) {
+			updateCharts();
+			schedule(this, simulationParameters.UPDATE_INTERVAL, Events.UPDATE_REAL_TIME_CHARTS);
+		} else {
+			SimLog.println("Error: Unknown event " + evt);
+			System.exit(0);
+		}
+	}
+
+	@Override
+	public void shutdownEntity() {
+		if (simulationParameters.DISPLAY_REAL_TIME_CHARTS && !simulationParameters.PARALLEL) {
+			// Close real time charts after the end of the simulation
+			if (simulationParameters.AUTO_CLOSE_REAL_TIME_CHARTS)
+				close();
+			try {
+				// Save those charts in bitmap and vector formats
+				if (simulationParameters.SAVE_CHARTS)
+					saveCharts();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
 	}
 
 	public void updateCharts() {
@@ -290,7 +330,5 @@ public class SimulationVisualizer {
 		BitmapEncoder.saveBitmapWithDPI(networkUtilizationChart, folderName + "/network_usage", BitmapFormat.PNG, 600);
 		BitmapEncoder.saveBitmapWithDPI(cpuUtilizationChart, folderName + "/cpu_usage", BitmapFormat.PNG, 600);
 		BitmapEncoder.saveBitmapWithDPI(tasksSuccessChart, folderName + "/tasks_success_rate", BitmapFormat.PNG, 600);
-
 	}
-
 }

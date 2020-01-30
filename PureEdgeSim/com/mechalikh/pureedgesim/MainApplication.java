@@ -1,7 +1,6 @@
 package com.mechalikh.pureedgesim;
 
 import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.text.SimpleDateFormat;
 import java.util.*;

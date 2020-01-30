@@ -1,5 +1,6 @@
 package com.mechalikh.pureedgesim.orchestration;
 
+import com.mechalikh.pureedgesim.core.Events;
 import org.cloudbus.cloudsim.brokers.DatacenterBrokerSimple;
 import org.cloudbus.cloudsim.core.CloudSim;
 import org.cloudbus.cloudsim.core.CloudSimTags;
@@ -22,7 +23,7 @@ public class EdgeBroker extends DatacenterBrokerSimple {
 		switch (ev.getTag()) {
 			case CloudSimTags.CLOUDLET_RETURN: // the task execution finished
 				final Task task = (Task) ev.getData();
-				scheduleNow(simulationManager, SimulationManager.TRANSFER_RESULTS_TO_ORCH, task);
+				scheduleNow(simulationManager, Events.TRANSFER_RESULTS_TO_ORCH, task);
 				break;
 			default:
 				break;

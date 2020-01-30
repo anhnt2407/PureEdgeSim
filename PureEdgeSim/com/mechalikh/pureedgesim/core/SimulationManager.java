@@ -20,15 +20,6 @@ import com.mechalikh.pureedgesim.orchestration.Orchestrator;
 import org.cloudsimplus.listeners.CloudletVmEventInfo;
 
 public class SimulationManager extends CloudSimEntity {
-	public static final int Base = 1000; // avoid conflict with CloudSim Plus tags
-	public static final int SEND_TASK_FROM_ORCH_TO_DESTINATION = Base + 8;
-	private static final int PRINT_LOG = Base + 1;
-	private static final int SHOW_PROGRESS = Base + 2;
-	public static final int EXECUTE_TASK = Base + 3;
-	public static final int TRANSFER_RESULTS_TO_ORCH = Base + 4;
-	public static final int RESULT_RETURN_FINISHED = Base + 5;
-	public static final int SEND_TO_ORCH = Base + 6;
-	public static final int UPDATE_REAL_TIME_CHARTS = Base + 7;
 
 	private EdgeBroker broker;
 	private List<Task> tasksList;
@@ -91,18 +82,14 @@ public class SimulationManager extends CloudSimEntity {
 				task.setOrchestrator(task.getEdgeDevice());
 
 			// Schedule the tasks offloading
-			schedule(this, task.getTime(), SEND_TO_ORCH, task);
+			schedule(this, task.getTime(), Events.SEND_TO_ORCH, task);
 		}
 
 		// Scheduling the end of the simulation
-		schedule(this, simulationParameters.SIMULATION_TIME, PRINT_LOG);
-
-		// Updating real time charts
-		if (simulationParameters.DISPLAY_REAL_TIME_CHARTS && !simulationParameters.PARALLEL)
-			schedule(this, simulationParameters.INITIALIZATION_TIME, UPDATE_REAL_TIME_CHARTS);
+		schedule(this, simulationParameters.SIMULATION_TIME, Events.PRINT_LOG);
 
 		// Show simulation progress
-		schedule(this, simulationParameters.INITIALIZATION_TIME, SHOW_PROGRESS);
+		schedule(this, simulationParameters.INITIALIZATION_TIME, Events.SHOW_PROGRESS);
 
 		simLog.printSameLine("Simulation progress : [", "red");
 	}
@@ -111,29 +98,29 @@ public class SimulationManager extends CloudSimEntity {
 	public void processEvent(SimEvent ev) {
 		Task task = (Task) ev.getData();
 		switch (ev.getTag()) {
-		case SEND_TO_ORCH:
+		case Events.SEND_TO_ORCH:
 			// Send the offloading request to the closest orchestrator
 			sendTaskToOrchestrator(task);
 			break;
 
-		case SEND_TASK_FROM_ORCH_TO_DESTINATION:
+		case Events.SEND_TASK_FROM_ORCH_TO_DESTINATION:
 			// Send the request from the orchestrator to the offloading destination
 			sendFromOrchToDestination(task);
 			break;
 
-		case EXECUTE_TASK:
+		case Events.EXECUTE_TASK:
 			// Execute the task
 			if (taskFailed(task, 2))
 				return;
 			broker.submitCloudlet(task);
 			break;
 
-		case TRANSFER_RESULTS_TO_ORCH:
+		case Events.TRANSFER_RESULTS_TO_ORCH:
 			// Transfer the results to the orchestrator
 			sendResultsToOchestrator(task);
 			break;
 
-		case RESULT_RETURN_FINISHED:
+		case Events.RESULT_RETURN_FINISHED:
 			// Result returned to edge device
 			if (taskFailed(task, 0))
 				return;
@@ -141,7 +128,7 @@ public class SimulationManager extends CloudSimEntity {
 			tasksCount++;
 			break;
 
-		case SHOW_PROGRESS:
+		case Events.SHOW_PROGRESS:
 			// Calculate the simulation progress
 			int progress = 100 * broker.getCloudletFinishedList().size() / simLog.getGeneratedTasks();
 			if (oldProgress != progress) {
@@ -153,18 +140,10 @@ public class SimulationManager extends CloudSimEntity {
 				} else
 					simLog.printSameLine("#", "red");
 			}
-			schedule(this, simulationParameters.SIMULATION_TIME / 100, SHOW_PROGRESS);
+			schedule(this, simulationParameters.SIMULATION_TIME / 100, Events.SHOW_PROGRESS);
 			break;
 
-		case UPDATE_REAL_TIME_CHARTS:
-			// Update simulation Map
-			simulationVisualizer.updateCharts();
-
-			// Schedule the next update
-			schedule(this, simulationParameters.UPDATE_INTERVAL, UPDATE_REAL_TIME_CHARTS);
-			break;
-
-		case PRINT_LOG:  // TODO This shouldn't be an event
+		case Events.PRINT_LOG:  // TODO This shouldn't be an event
 			// Print results when simulation is over
 			List<Task> finishedTasks = broker.getCloudletFinishedList();
 
@@ -177,24 +156,11 @@ public class SimulationManager extends CloudSimEntity {
 				// especially when 1% doesn't affect the simulation results that much, change
 				// this value to lower ( 95% or 90%) in order to make simulation faster. however
 				// this may affect the results
-				schedule(this, 10, PRINT_LOG);
+				schedule(this, 10, Events.PRINT_LOG);
 				break;
 			}
 
 			simLog.printSameLine(" 100% ]", "red");
-
-			if (simulationParameters.DISPLAY_REAL_TIME_CHARTS && !simulationParameters.PARALLEL) {
-				// Close real time charts after the end of the simulation
-				if (simulationParameters.AUTO_CLOSE_REAL_TIME_CHARTS)
-					simulationVisualizer.close();
-				try {
-					// Save those charts in bitmap and vector formats
-					if (simulationParameters.SAVE_CHARTS)
-						simulationVisualizer.saveCharts();
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-			}
 
 			// Show results and stop the simulation
 			simLog.showIterationResults(finishedTasks);
@@ -217,7 +183,7 @@ public class SimulationManager extends CloudSimEntity {
 		if (task.getEdgeDevice().getId() != task.getVm().getHost().getDatacenter().getId()) {
 			scheduleNow(networkModel, NetworkModel.SEND_RESULT_TO_ORCH, task);
 		} else { // The task has been executed locally / no offloading
-			scheduleNow(this, RESULT_RETURN_FINISHED, task);
+			scheduleNow(this, Events.RESULT_RETURN_FINISHED, task);
 		}
 
 		// TODO This is probably not the right place to do this?
@@ -254,7 +220,7 @@ public class SimulationManager extends CloudSimEntity {
 
 		} else { // The task will be executed locally / no offloading or will be executed where
 					// the orchestrator is deployed (no network usage)
-			scheduleNow(this, EXECUTE_TASK, task);
+			scheduleNow(this, Events.EXECUTE_TASK, task);
 		}
 	}
 
